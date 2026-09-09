@@ -1,0 +1,8 @@
+schema_version: '1'
+id: source-nextjs
+detect:
+  packages:
+    next: '*'
+analyzer: generic-static
+signals:
+  router_candidates: [app-router, pages-router]

@@ -1,0 +1,19 @@
+schema_version: "1"
+domain: __DOMAIN__
+entry:
+  legacy: ""
+  target: ""
+switch:
+  mechanism: ""
+  flag: ""
+rollout:
+  strategy: staged
+  stages: []
+rollback:
+  switch_to: legacy
+preconditions:
+  functional: PASS
+  visual: PASS
+  architecture: PASS
+  traceability: PASS
+  legacy_delta: CLEAN

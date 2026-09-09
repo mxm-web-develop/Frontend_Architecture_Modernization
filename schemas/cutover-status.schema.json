@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cutover Status",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "domain",
+    "state"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "domain": {
+      "type": "string"
+    },
+    "state": {
+      "enum": [
+        "NOT_READY",
+        "CUTOVER_READY",
+        "PILOT",
+        "ROLLOUT",
+        "CUTOVER_VERIFIED",
+        "LEGACY_FROZEN",
+        "ROLLED_BACK"
+      ]
+    },
+    "last_transition_commit": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

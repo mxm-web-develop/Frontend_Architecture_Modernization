@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Parity Matrix",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "domain",
+    "capabilities"
+  ],
+  "$defs": {
+    "gate": {
+      "type": "object",
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "PENDING",
+            "PASS",
+            "FAIL",
+            "WAIVED"
+          ]
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "domain": {
+      "type": "string"
+    },
+    "route_coverage": {
+      "type": "object",
+      "description": "v1.6 P3: legacy 路由覆盖率；进入 MODERNIZED 必须 covered == total",
+      "required": ["covered", "total"],
+      "properties": {
+        "covered": { "type": "integer", "minimum": 0 },
+        "total": { "type": "integer", "minimum": 0 },
+        "missing": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "capability_completeness": {
+      "type": "object",
+      "description": "v1.6 P3: 每 capability 必须 route/ui/api/flow 全为 true",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "route": { "type": "boolean" },
+          "ui": { "type": "boolean" },
+          "api": { "type": "boolean" },
+          "flow": { "type": "boolean" }
+        }
+      }
+    },
+    "live_runtime_evidence_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "v1.6 P1: domain/live-runtime 下已落 .json 证据数量"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "functional",
+          "visual",
+          "architecture",
+          "traceability"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "functional": {
+            "$ref": "#/$defs/gate"
+          },
+          "visual": {
+            "type": "object",
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "policy": {
+                "type": "string"
+              },
+              "status": {
+                "enum": [
+                  "PENDING",
+                  "PASS",
+                  "FAIL",
+                  "WAIVED",
+                  "NOT_APPLICABLE"
+                ]
+              },
+              "evidence": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "architecture": {
+            "$ref": "#/$defs/gate"
+          },
+          "traceability": {
+            "$ref": "#/$defs/gate"
+          }
+        }
+      }
+    }
+  }
+}

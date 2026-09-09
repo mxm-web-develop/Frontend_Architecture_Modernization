@@ -1,0 +1,27 @@
+schema_version: "1"
+gates:
+  functional:
+    requirement: required
+    evidence:
+      type: command-run
+      required_command_keys:
+        - test
+        - e2e
+  visual:
+    requirement: required_when_visual
+    evidence:
+      type: visual-result
+  architecture:
+    requirement: required
+    evidence:
+      type: command-run
+      required_command_keys:
+        - build
+        - lint
+        - typecheck
+  traceability:
+    requirement: required
+    evidence:
+      type: command-run
+      required_command_keys:
+        - governance_validate

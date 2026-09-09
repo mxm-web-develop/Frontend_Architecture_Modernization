@@ -1,0 +1,6 @@
+schema_version: '1'
+id: FW-PRESERVE-CURRENT
+kind: preserve-current
+architecture_constitution: required
+framework_specific:
+  preserve_current_framework: true

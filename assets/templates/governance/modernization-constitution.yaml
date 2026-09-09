@@ -1,0 +1,34 @@
+schema_version: '1'
+constitution_id: MOD-CONSTITUTION-001
+ai_native:
+  repository_self_describing: required
+  commands_machine_discoverable: required
+  architecture_rules_machine_readable: required
+  durable_state_outside_chat: required
+capabilities:
+  registry: required
+  explicit_module_ownership: required
+modules:
+  manifest: required
+  public_integration_contract: required
+  cross_module_internal_import: prohibited
+  independent_test_boundary: required
+  independent_build_boundary: preferred
+  independent_deploy: optional
+code_health:
+  god_component: remediation_required
+  large_mixed_responsibility_file: remediation_required
+  direct_http_in_view: prohibited
+  business_logic_in_ui: remediation_required
+  non_obvious_architecture_comments: required
+  preserve_external_behavior: required
+documentation:
+  machine_readable_governance: required
+  human_readable_architecture: required
+  module_guides: required
+  language_from_project_governance: required
+evidence:
+  functional: required
+  visual: required_when_visual
+  architecture: required
+  traceability: required

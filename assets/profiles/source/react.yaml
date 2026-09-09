@@ -1,0 +1,8 @@
+schema_version: '1'
+id: source-react
+detect:
+  packages:
+    react: '*'
+analyzer: generic-static
+signals:
+  router_candidates: [react-router, react-router-dom]

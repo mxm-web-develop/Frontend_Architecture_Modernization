@@ -1,0 +1,5 @@
+schema_version: "1"
+domain: __DOMAIN__
+legacy_repository: legacy-frontend
+baseline_commit: "__LEGACY_BASE__"
+captured_at: ""

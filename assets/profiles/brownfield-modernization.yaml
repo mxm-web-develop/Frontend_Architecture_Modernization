@@ -1,0 +1,43 @@
+schema_version: '1'
+profile_id: brownfield-modernization
+profile_status: active
+scope:
+  mode: brownfield-new-repository
+  net_new_product_requirements: deferred
+  legacy_product_truth: authoritative
+  target_architecture_source: modernization-constitution
+repositories:
+  sources:
+    - id: legacy-frontend
+      type: frontend
+      path: ../legacy-frontend
+      mode: read-only
+  target:
+    id: target-frontend
+    type: frontend
+    path: .
+    mode: read-write
+migration:
+  mode: cross-repository
+  allowed_modes:
+    - cross-repository
+    - in-place
+  track_baseline_commit: true
+  track_legacy_deltas: true
+analysis:
+  adapter: auto
+  allow_heuristic_fallback: true
+framework_strategy:
+  initial_status: UNDECIDED
+  require_human_confirmation: true
+language:
+  interaction: zh-CN
+  human_documentation: zh-CN
+  enforce_human_documentation: true
+  machine_protocol: en
+  code_identifiers: en
+  code_comments: zh-CN
+  governed_markdown:
+    - docs
+    - migration
+    - handoff

@@ -1,0 +1,60 @@
+schema_version: '1'
+profile_id: generic-frontend-modernization
+profile_status: legacy-v1.2-compatibility
+scope:
+  architecture_type: frontend-only
+  analyze_backend_repositories: false
+  allow_external_backend_recommendations: true
+repositories:
+  sources:
+  - id: legacy-frontend
+    type: frontend
+    path: ../legacy-frontend
+    mode: read-only
+  target:
+    id: target-frontend
+    type: frontend
+    path: .
+    mode: read-write
+target_stack:
+  detect_from_project_governance: true
+architecture:
+  source_of_truth: governance
+  preserve_approved_ui_output: true
+  default_migration_visual_policy: STRICT_PRESERVE
+migration:
+  track_baseline_commit: true
+  track_legacy_deltas: true
+  require_explicit_remove_decision: true
+  mode: cross-repository
+  allowed_modes:
+  - cross-repository
+  - in-place
+analysis:
+  adapter: auto
+  allow_heuristic_fallback: false
+  adapter_contract: engine/analyzers/protocol.md
+# === v1.6 P7 新增：live runtime 与 delivery mode ===
+live_runtime:
+  url: ""
+  auth:
+    type: ""
+    selector: ""
+  required: false
+  capture:
+    driver: ""
+    output_dir: migration/system/live-baseline
+delivery:
+  mode: module-loop
+project_size: medium
+language:
+  interaction: en
+  human_documentation: en
+  enforce_human_documentation: true
+  machine_protocol: en
+  code_identifiers: en
+  code_comments: en
+  governed_markdown:
+  - docs
+  - migration
+v1_3_default: false

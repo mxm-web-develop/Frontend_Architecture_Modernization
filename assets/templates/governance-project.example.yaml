@@ -1,0 +1,24 @@
+schema_version: '1'
+project_id: target-frontend
+profile: brownfield-modernization
+migration_mode: cross-repository
+modernization:
+  scope_mode: brownfield-new-repository
+  new_requirements: defer
+  framework_strategy: undecided-until-confirmed
+language:
+  interaction: zh-CN
+  human_documentation: zh-CN
+  enforce_human_documentation: true
+  machine_protocol: en
+  code_identifiers: en
+  code_comments: zh-CN
+repositories:
+  sources:
+    - id: legacy-frontend
+      path: ../legacy-frontend
+      mode: read-only
+  target:
+    id: target-frontend
+    path: .
+    mode: read-write

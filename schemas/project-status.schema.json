@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Project Modernization Status",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "state",
+    "history"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "state": {
+      "enum": [
+        "DISCOVERED",
+        "CURRENT_SYSTEM_MODELED",
+        "ARCHITECTURE_ASSESSED",
+        "FRAMEWORK_STRATEGY_CONFIRMED",
+        "TARGET_FOUNDATION_READY",
+        "MODERNIZATION_ACTIVE",
+        "HANDOFF_READY"
+      ]
+    },
+    "state_commit": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "history": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  }
+}

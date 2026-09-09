@@ -1,0 +1,11 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "title":"Unified Modernization Constitution",
+  "type":"object",
+  "required":["schema_version","constitution_id","ai_native","capabilities","modules","code_health","documentation","evidence"],
+  "properties":{
+    "schema_version":{"type":"string"},"constitution_id":{"type":"string"},
+    "ai_native":{"type":"object"},"capabilities":{"type":"object"},"modules":{"type":"object"},
+    "code_health":{"type":"object"},"documentation":{"type":"object"},"evidence":{"type":"object"}
+  }
+}

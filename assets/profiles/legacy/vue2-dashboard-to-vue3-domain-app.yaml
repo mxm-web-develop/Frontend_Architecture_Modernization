@@ -1,0 +1,116 @@
+schema_version: '1'
+profile_id: vue2-dashboard-to-vue3-domain-app
+profile_status: legacy-v1.2-compatibility
+scope:
+  architecture_type: frontend-only
+  analyze_backend_repositories: false
+  allow_external_backend_recommendations: true
+repositories:
+  sources:
+  - id: legacy-frontend
+    type: frontend
+    path: ../legacy-dashboard
+    mode: read-only
+  target:
+    id: dashboard-next
+    type: frontend
+    path: .
+    mode: read-write
+target_stack:
+  package_manager: pnpm
+  monorepo: nx
+  framework: vue3
+  language: typescript
+  bundler: vite
+  router: vue-router-4
+  state: pinia
+architecture:
+  style: domain-application
+  dashboard_shell:
+    business_pages_allowed: false
+  first_level_business_route:
+    boundary: domain-application
+    independent_build: required
+    standalone_runtime: required
+    embedded_runtime: required
+  internal_routing:
+    owner: domain
+    runtime_enable_disable: required
+  dependencies:
+    direct_cross_domain_import: prohibited
+  ui:
+    internal_design_system_required: true
+    default_migration_visual_policy: STRICT_PRESERVE
+    preserve_approved_ui_output: true
+  data_access:
+    component_direct_http: prohibited
+    repository_or_adapter_boundary: preferred
+responsibility_review:
+  enabled: true
+  backend_source_in_scope: false
+  outputs:
+  - FRONTEND
+  - BFF_RECOMMENDATION
+  - BACKEND_RECOMMENDATION
+  - PLATFORM_GATEWAY_RECOMMENDATION
+migration:
+  legacy_read_only: true
+  track_baseline_commit: true
+  track_legacy_deltas: true
+  require_explicit_remove_decision: true
+  mode: cross-repository
+  allowed_modes:
+  - cross-repository
+gates:
+  functional: required
+  visual: required_when_visual
+  architecture: required
+  traceability: required
+visual:
+  recommended_tool: playwright
+  # v1.6: baseline 默认走线上；live_runtime.url 为空时回退到 legacy_build（并在 module 开工时显式确认）
+  baseline_source: live_runtime
+  baseline_fallback: legacy_build
+  auto_update_failed_baseline: prohibited
+  deterministic_fixture: required_for_strict
+  default_viewport:
+    width: 1440
+    height: 900
+# === v1.6 P7 新增：live runtime 与 delivery mode 配置 ===
+# 留证原则：线上可访问时，UI/UX 真相以线上为准；legacy build 仅作为辅助 baseline
+live_runtime:
+  url: ""                  # 生产/线上入口；空字符串代表未启用 live evidence
+  auth:
+    type: ""               # cookie | bearer | none
+    selector: ""           # 描述如 "Cookie:SESSION=xxx"，**不**保存真实凭证
+  required: false          # true 时 STRICT_PRESERVE 必须用 live baseline；IMPLEMENTING 强制 live-baseline 已落
+  capture:
+    driver: ""             # playwright | puppeteer | cursor-browser | manual
+    output_dir: migration/system/live-baseline
+# === v1.6 P5 新增：delivery mode（默认 module-loop）===
+delivery:
+  mode: module-loop        # module-loop | legacy-phase
+project_size: large        # small | medium | large — 决定 mode 默认值
+documentation:
+  machine_truth_root: governance
+  migration_truth_root: migration
+  human_docs_root: docs
+  generated_docs_root: docs/generated
+git:
+  prefer_short_lived_branches: true
+  capability_ids_in_migration_commits: true
+  trailers_recommended: true
+analysis:
+  adapter: vue2-ast
+  allow_heuristic_fallback: false
+language:
+  interaction: zh-CN
+  human_documentation: zh-CN
+  enforce_human_documentation: true
+  machine_protocol: en
+  code_identifiers: en
+  code_comments: zh-CN
+  governed_markdown:
+  - docs
+  - migration
+v1_3_default: false

@@ -1,0 +1,55 @@
+{
+  "project_root": "..",
+  "legacy": {
+    "base_url": "http://localhost:8080",
+    "server": {
+      "command": "npm run serve",
+      "cwd": "../legacy-dashboard",
+      "health_url": "http://localhost:8080",
+      "timeout_ms": 60000
+    },
+    "auth": {
+      "strategy": "storage-state",
+      "path": "migration/fixtures/auth/legacy.json"
+    }
+  },
+  "target": {
+    "base_url": "http://localhost:5173",
+    "server": {
+      "command": "pnpm dev",
+      "cwd": ".",
+      "health_url": "http://localhost:5173",
+      "timeout_ms": 60000
+    },
+    "auth": {
+      "strategy": "storage-state",
+      "path": "migration/fixtures/auth/target.json"
+    }
+  },
+  "environment": {
+    "browser": "chromium",
+    "viewport": {"width": 1440, "height": 900},
+    "device_scale_factor": 1,
+    "locale": "zh-CN",
+    "timezone": "Asia/Shanghai",
+    "color_scheme": "light",
+    "required_fonts": []
+  },
+  "output_dir": "migration/evidence/visual",
+  "scenarios": [
+    {
+      "id": "USER-LIST-default",
+      "capability": "CAP-USER-001",
+      "policy": "STRICT_PRESERVE",
+      "legacy_route": "/system/user",
+      "target_route": "/users",
+      "ready_selector": "table",
+      "mocks": [
+        {"url": "**/api/users**", "method": "GET", "body_file": "migration/fixtures/users.json", "status": 200}
+      ],
+      "actions": [],
+      "max_diff_pixels": 0,
+      "max_diff_ratio": 0
+    }
+  ]
+}

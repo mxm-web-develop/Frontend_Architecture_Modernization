@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Domain Inventory",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "domain"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "domain": {
+      "type": "string"
+    },
+    "routes": {
+      "type": "array"
+    },
+    "pages": {
+      "type": "array"
+    },
+    "components": {
+      "type": "array"
+    },
+    "stores": {
+      "type": "array"
+    },
+    "apis": {
+      "type": "array"
+    },
+    "permissions": {
+      "type": "array"
+    },
+    "assets": {
+      "type": "array"
+    },
+    "unknowns": {
+      "type": "array"
+    }
+  }
+}

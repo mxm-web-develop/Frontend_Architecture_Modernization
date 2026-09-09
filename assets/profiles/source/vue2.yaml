@@ -1,0 +1,9 @@
+schema_version: '1'
+id: source-vue2
+detect:
+  packages:
+    vue: '^2'
+analyzer: vue2-ast
+signals:
+  router: vue-router-3
+  state: vuex-3

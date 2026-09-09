@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Legacy Baseline",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "domain",
+    "legacy_repository",
+    "baseline_commit"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "domain": {
+      "type": "string"
+    },
+    "legacy_repository": {
+      "type": "string"
+    },
+    "baseline_commit": {
+      "type": "string"
+    },
+    "captured_at": {
+      "type": "string"
+    }
+  }
+}

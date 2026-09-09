@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Domain Map",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "domains"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "domains": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  }
+}

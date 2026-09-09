@@ -1,0 +1,10 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "title":"Business Module Manifest",
+  "type":"object","required":["schema_version","id","ownership","public_api","runtime","integration","dependencies","quality","documentation"],
+  "properties":{
+    "schema_version":{"type":"string"},"id":{"type":"string"},"name":{"type":"string"},
+    "ownership":{"type":"object","properties":{"capabilities":{"type":"array","items":{"type":"string"}}}},
+    "public_api":{"type":"object"},"runtime":{"type":"object"},"integration":{"type":"object"},"dependencies":{"type":"object"},"quality":{"type":"object"},"documentation":{"type":"object"}
+  }
+}

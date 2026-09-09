@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Responsibility Review",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "domain",
+    "findings"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "domain": {
+      "type": "string"
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "capability_id": {
+            "type": "string"
+          },
+          "classification": {
+            "type": "object"
+          },
+          "migration": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "status": {
+      "enum": [
+        "pending",
+        "complete",
+        "approved"
+      ]
+    }
+  }
+}

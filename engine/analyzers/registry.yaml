@@ -1,0 +1,28 @@
+schema_version: '1'
+adapters:
+  vue2-ast:
+    priority: 100
+    detect:
+      package: vue
+      major: 2
+    engine: engine/analyzers/vue2/analyze.mjs
+  nextjs-generic:
+    priority: 90
+    detect:
+      package: next
+    engine: engine/analyzers/generic/analyze.py
+  vue3-generic:
+    priority: 80
+    detect:
+      package: vue
+      major: 3
+    engine: engine/analyzers/generic/analyze.py
+  react-generic:
+    priority: 70
+    detect:
+      package: react
+    engine: engine/analyzers/generic/analyze.py
+  generic-static:
+    priority: 1
+    detect: {}
+    engine: engine/analyzers/generic/analyze.py

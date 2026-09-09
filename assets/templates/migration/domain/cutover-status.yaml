@@ -1,0 +1,6 @@
+schema_version: '1'
+domain: __DOMAIN__
+state: NOT_READY
+last_transition_commit: null
+notes: []
+history: []

@@ -1,0 +1,10 @@
+schema_version: '1'
+id: governance-strict-brownfield
+capability_coverage: required
+functional_evidence: required
+visual_evidence: required_when_visual
+architecture_evidence: required
+traceability_evidence: required
+new_requirements_during_modernization: defer
+human_documentation: required
+machine_governance: required

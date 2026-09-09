@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Legacy System Map",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "modules",
+    "unknowns"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "baseline_commit": {
+      "type": "string",
+      "minLength": 1
+    },
+    "summary": {
+      "type": "string"
+    },
+    "modules": {
+      "type": "array"
+    },
+    "unknowns": {
+      "type": "array"
+    }
+  }
+}

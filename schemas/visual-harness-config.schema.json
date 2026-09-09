@@ -1,0 +1,220 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Dual Source Visual Harness",
+  "type": "object",
+  "required": [
+    "legacy",
+    "target",
+    "environment",
+    "scenarios",
+    "output_dir"
+  ],
+  "$defs": {
+    "source": {
+      "type": "object",
+      "required": [
+        "base_url"
+      ],
+      "properties": {
+        "base_url": {
+          "type": "string"
+        },
+        "storage_state": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "server": {
+          "type": "object",
+          "properties": {
+            "command": {
+              "type": "string"
+            },
+            "cwd": {
+              "type": "string"
+            },
+            "health_url": {
+              "type": "string"
+            },
+            "timeout_ms": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "env": {
+              "type": "object"
+            }
+          }
+        },
+        "auth": {
+          "type": "object",
+          "properties": {
+            "strategy": {
+              "enum": [
+                "none",
+                "storage-state",
+                "cookies",
+                "local-storage",
+                "script"
+              ]
+            },
+            "path": {
+              "type": "string"
+            },
+            "script": {
+              "type": "string"
+            },
+            "items": {
+              "type": "object"
+            },
+            "cookies": {
+              "type": "array"
+            }
+          }
+        }
+      }
+    }
+  },
+  "properties": {
+    "legacy": {
+      "$ref": "#/$defs/source"
+    },
+    "target": {
+      "$ref": "#/$defs/source"
+    },
+    "environment": {
+      "type": "object",
+      "required": [
+        "viewport"
+      ],
+      "properties": {
+        "browser": {
+          "enum": [
+            "chromium"
+          ]
+        },
+        "viewport": {
+          "type": "object",
+          "required": [
+            "width",
+            "height"
+          ],
+          "properties": {
+            "width": {
+              "type": "integer"
+            },
+            "height": {
+              "type": "integer"
+            }
+          }
+        },
+        "locale": {
+          "type": "string"
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "color_scheme": {
+          "enum": [
+            "light",
+            "dark"
+          ]
+        },
+        "device_scale_factor": {
+          "type": "number",
+          "minimum": 0.1
+        },
+        "required_fonts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "output_dir": {
+      "type": "string"
+    },
+    "scenarios": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "legacy_route",
+          "target_route"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "capability": {
+            "type": "string"
+          },
+          "legacy_route": {
+            "type": "string"
+          },
+          "target_route": {
+            "type": "string"
+          },
+          "ready_selector": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "mocks": {
+            "type": "array"
+          },
+          "actions": {
+            "type": "array"
+          },
+          "policy": {
+            "enum": [
+              "STRICT_PRESERVE",
+              "STRUCTURE_PRESERVE",
+              "APPROVED_REDESIGN",
+              "NOT_VISUAL"
+            ]
+          },
+          "legacy_ready_selector": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "target_ready_selector": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "legacy_mocks": {
+            "type": "array"
+          },
+          "target_mocks": {
+            "type": "array"
+          },
+          "legacy_actions": {
+            "type": "array"
+          },
+          "target_actions": {
+            "type": "array"
+          },
+          "max_diff_pixels": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "max_diff_ratio": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    },
+    "project_root": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Target Contract",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "domain",
+    "status"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "domain": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "complete",
+        "approved"
+      ]
+    },
+    "routes": {
+      "type": "array"
+    },
+    "data_access": {
+      "type": "array"
+    },
+    "dependencies": {
+      "type": "array"
+    },
+    "runtime": {
+      "type": "object"
+    },
+    "framework_strategy": {
+      "type": "string"
+    },
+    "module_manifest": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "public_integration_contracts": {
+      "type": "array"
+    }
+  }
+}

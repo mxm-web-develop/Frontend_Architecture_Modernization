@@ -1,0 +1,10 @@
+schema_version: "1"
+domain: __DOMAIN__
+routes: []
+pages: []
+components: []
+stores: []
+apis: []
+permissions: []
+assets: []
+unknowns: []

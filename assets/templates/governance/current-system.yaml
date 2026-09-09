@@ -1,0 +1,14 @@
+schema_version: '1'
+status: UNMODELED
+source_repository: legacy-frontend
+detected:
+  framework: unknown
+  framework_version: null
+  router: null
+  state: null
+  build: null
+  package_manager: null
+analysis:
+  adapter: null
+  manifest: null
+runtime_unknowns: []

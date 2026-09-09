@@ -1,0 +1,9 @@
+schema_version: '1'
+id: FW-VUE3
+kind: vue3
+architecture_constitution: required
+framework_specific:
+  component_model: composition-api-preferred
+  router: vue-router-4
+  state: pinia-preferred
+  bundler: vite-preferred

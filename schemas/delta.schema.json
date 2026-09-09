@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Delta Record",
+  "type": "object",
+  "required": [
+    "id",
+    "from_commit",
+    "to_commit",
+    "classification",
+    "status"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "from_commit": {
+      "type": "string"
+    },
+    "to_commit": {
+      "type": "string"
+    },
+    "classification": {
+      "enum": [
+        "TARGET_UPDATE_REQUIRED",
+        "ALREADY_COVERED",
+        "LEGACY_ONLY",
+        "UNKNOWN"
+      ]
+    },
+    "status": {
+      "enum": [
+        "PENDING",
+        "RESOLVED",
+        "WAIVED"
+      ]
+    },
+    "affected_capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

@@ -1,0 +1,10 @@
+schema_version: '1'
+commands:
+  install: null
+  dev: null
+  build: null
+  lint: null
+  typecheck: null
+  test: null
+  e2e: null
+  governance_validate: null

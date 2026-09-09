@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Domain Modernization Status",
+  "type": "object",
+  "required": [
+    "domain",
+    "state",
+    "legacy",
+    "gates"
+  ],
+  "properties": {
+    "domain": {
+      "type": "string"
+    },
+    "state": {
+      "enum": [
+        "DISCOVERED",
+        "CAPABILITY_MODELED",
+        "RESPONSIBILITY_REVIEWED",
+        "TARGET_CONTRACT_DEFINED",
+        "REMEDIATION_PLANNED",
+        "IMPLEMENTING",
+        "FUNCTIONAL_PARITY_CHECK",
+        "VISUAL_PARITY_CHECK",
+        "ARCHITECTURE_CHECK",
+        "TRACEABILITY_CHECK",
+        "MODERNIZED",
+        "SYNCING"
+      ]
+    },
+    "legacy": {
+      "type": "object",
+      "required": [
+        "baseline_commit",
+        "last_checked_commit"
+      ],
+      "properties": {
+        "baseline_commit": {
+          "type": "string"
+        },
+        "last_checked_commit": {
+          "type": "string"
+        }
+      }
+    },
+    "gates": {
+      "type": "object",
+      "required": [
+        "functional",
+        "visual",
+        "architecture",
+        "traceability"
+      ],
+      "properties": {
+        "functional": {
+          "enum": [
+            "PENDING",
+            "PASS",
+            "FAIL",
+            "WAIVED"
+          ]
+        },
+        "visual": {
+          "enum": [
+            "PENDING",
+            "PASS",
+            "FAIL",
+            "WAIVED",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "architecture": {
+          "enum": [
+            "PENDING",
+            "PASS",
+            "FAIL",
+            "WAIVED"
+          ]
+        },
+        "traceability": {
+          "enum": [
+            "PENDING",
+            "PASS",
+            "FAIL",
+            "WAIVED"
+          ]
+        }
+      }
+    },
+    "gate_evidence": {
+      "type": "object",
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "gate_reasons": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  }
+}

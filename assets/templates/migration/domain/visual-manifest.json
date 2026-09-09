@@ -1,0 +1,15 @@
+{
+  "schema_version": "1",
+  "domain": "__DOMAIN__",
+  "environment": {
+    "browser": "chromium",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "locale": "zh-CN",
+    "timezone": "Asia/Shanghai",
+    "color_scheme": "light"
+  },
+  "scenarios": []
+}

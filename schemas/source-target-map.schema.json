@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Source Target Map",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "domain",
+    "mappings"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "domain": {
+      "type": "string"
+    },
+    "mappings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "capability_id",
+          "legacy",
+          "target"
+        ],
+        "properties": {
+          "capability_id": {
+            "type": "string"
+          },
+          "legacy": {
+            "type": "object"
+          },
+          "target": {
+            "type": "object",
+            "properties": {
+              "domain": {
+                "type": "string"
+              },
+              "sources": {
+                "type": "array",
+                "items": {
+                  "oneOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "file": {
+                          "type": "string"
+                        },
+                        "path": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "paths": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

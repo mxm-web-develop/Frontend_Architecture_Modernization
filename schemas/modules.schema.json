@@ -1,0 +1,9 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "title":"Target Module Registry",
+  "type":"object","required":["schema_version","modules"],
+  "properties":{"schema_version":{"type":"string"},"modules":{"type":"object","additionalProperties":{"type":"object","properties":{
+    "name":{"type":"string"},"manifest":{"type":"string"},"documentation":{"type":"string"},
+    "capabilities":{"type":"array","items":{"type":"string"}},"public_contracts":{"type":"array","items":{"type":"string"}}
+  }}}}
+}

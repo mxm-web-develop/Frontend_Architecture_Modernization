@@ -1,0 +1,7 @@
+schema_version: "1"
+rules:
+  - id: DEP-001
+    from: domain
+    to: domain
+    allow: false
+    reason: Direct cross-domain imports are prohibited by default.

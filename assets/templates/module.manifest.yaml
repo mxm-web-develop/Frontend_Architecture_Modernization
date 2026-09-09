@@ -1,0 +1,22 @@
+schema_version: '1'
+id: __MODULE__
+name: __MODULE__
+ownership:
+  capabilities: []
+public_api:
+  exports: []
+  contracts: []
+runtime:
+  standalone: preferred
+  embedded: required
+integration:
+  routes: []
+  events: []
+dependencies:
+  modules: []
+quality:
+  independent_tests: required
+  architecture_gate: required
+  visual_gate: required_when_visual
+documentation:
+  readme: README.md

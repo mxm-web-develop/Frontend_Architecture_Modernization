@@ -1,0 +1,5 @@
+schema_version: '1'
+id: FW-CUSTOM
+kind: custom
+architecture_constitution: required
+framework_specific: {}

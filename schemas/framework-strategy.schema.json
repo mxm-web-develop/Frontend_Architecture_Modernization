@@ -1,0 +1,18 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "title":"Framework Strategy",
+  "type":"object",
+  "required":["schema_version","status","recommendations"],
+  "properties":{
+    "schema_version":{"type":"string"},
+    "status":{"enum":["UNDECIDED","RECOMMENDED","CONFIRMED"]},
+    "current_framework":{"type":"string"},
+    "recommendations":{"type":"array","items":{"type":"object","required":["id","framework","status"],"properties":{
+      "id":{"type":"string"},"framework":{"type":"string"},"adapter":{"type":"string"},
+      "status":{"enum":["OPTION","RECOMMENDED"]},"fit_score":{"type":"number","minimum":0,"maximum":1},
+      "reasons":{"type":"array","items":{"type":"string"}},"tradeoffs":{"type":"array","items":{"type":"string"}}
+    }}},
+    "selected":{"type":["object","null"]},
+    "confirmation":{"type":["object","null"],"properties":{"confirmed_by":{"type":"string"},"decision":{"type":"string"},"confirmed_at":{"type":"string"}}}
+  }
+}

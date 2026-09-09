@@ -1,0 +1,8 @@
+schema_version: '1'
+status: GENERATED
+framework_strategy: governance/framework-strategy.yaml
+constitution: governance/modernization-constitution.yaml
+modules: governance/modules.yaml
+commands: governance/commands.yaml
+known_issues: handoff/known-issues.yaml
+new_requirements: handoff/new-requirements.yaml

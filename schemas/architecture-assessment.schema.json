@@ -1,0 +1,11 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "title":"Architecture Assessment",
+  "type":"object",
+  "required":["schema_version","status","dimensions","remediation_backlog"],
+  "properties":{
+    "schema_version":{"type":"string"},"status":{"enum":["PENDING","COMPLETE","APPROVED"]},"constitution":{"type":"string"},
+    "dimensions":{"type":"object","additionalProperties":{"type":"object","required":["score","findings"],"properties":{"score":{"type":["number","null"],"minimum":0,"maximum":100},"findings":{"type":"array"}}}},
+    "remediation_backlog":{"type":"array"}
+  }
+}

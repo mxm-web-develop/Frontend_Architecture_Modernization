@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Capability Map",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "domain",
+    "capabilities"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "domain": {
+      "type": "string"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "migration"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^CAP-[A-Z0-9-]+$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "migration": {
+            "type": "object",
+            "required": [
+              "disposition"
+            ],
+            "properties": {
+              "disposition": {
+                "enum": [
+                  "PRESERVE",
+                  "REPLACE",
+                  "REMOVE"
+                ]
+              },
+              "decision": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "strategy": {
+                "enum": [
+                  "FIX_BEFORE_MIGRATE",
+                  "MIGRATE_WITH_ADAPTER",
+                  "MIGRATE_AS_IS"
+                ]
+              }
+            }
+          },
+          "ui": {
+            "type": "object",
+            "properties": {
+              "visual_policy": {
+                "enum": [
+                  "STRICT_PRESERVE",
+                  "STRUCTURE_PRESERVE",
+                  "APPROVED_REDESIGN",
+                  "NOT_VISUAL"
+                ]
+              }
+            }
+          },
+          "scope": {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "enum": [
+                  "LEGACY_PARITY",
+                  "LEGACY_DELTA",
+                  "ARCHITECTURE_REMEDIATION",
+                  "GOVERNANCE_ENABLEMENT"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

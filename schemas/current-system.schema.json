@@ -1,0 +1,18 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "title":"Current Frontend System Model",
+  "type":"object",
+  "required":["schema_version","status","detected","analysis"],
+  "properties":{
+    "schema_version":{"type":"string"},
+    "status":{"enum":["UNMODELED","MODELED"]},
+    "source_repository":{"type":"string"},
+    "detected":{"type":"object","required":["framework"],"properties":{
+      "framework":{"type":"string"},"framework_version":{"type":["string","null"]},
+      "router":{"type":["string","null"]},"state":{"type":["string","null"]},
+      "build":{"type":["string","null"]},"package_manager":{"type":["string","null"]}
+    }},
+    "analysis":{"type":"object","properties":{"adapter":{"type":["string","null"]},"manifest":{"type":["string","null"]}}},
+    "runtime_unknowns":{"type":"array"}
+  }
+}

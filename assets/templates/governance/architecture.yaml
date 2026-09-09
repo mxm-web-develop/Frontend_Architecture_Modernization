@@ -1,0 +1,14 @@
+schema_version: '1'
+architecture:
+  style: module-oriented
+  source_of_truth: governance/modernization-constitution.yaml
+  module_ownership: required
+  public_integration_contract: required
+  cross_module_internal_import: prohibited
+  independent_test_boundary: required
+  independent_build_boundary: preferred
+  independent_deploy: optional
+  design_system: governed
+  component_direct_http: prohibited
+  default_visual_policy: STRICT_PRESERVE
+  framework_specific_rules: governance/framework-strategy.yaml

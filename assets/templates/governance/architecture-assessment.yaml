@@ -1,0 +1,14 @@
+schema_version: '1'
+status: PENDING
+constitution: governance/modernization-constitution.yaml
+dimensions:
+  ai_native: {score: null, findings: []}
+  capability_modularity: {score: null, findings: []}
+  dependency_governance: {score: null, findings: []}
+  state_isolation: {score: null, findings: []}
+  api_data_flow: {score: null, findings: []}
+  code_health: {score: null, findings: []}
+  documentation: {score: null, findings: []}
+  integration_readiness: {score: null, findings: []}
+  framework_lifecycle: {score: null, findings: []}
+remediation_backlog: []

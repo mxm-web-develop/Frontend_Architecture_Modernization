@@ -1,0 +1,8 @@
+schema_version: '1'
+id: FW-NEXTJS
+kind: nextjs
+architecture_constitution: required
+framework_specific:
+  router: app-router-preferred
+  server_client_boundary: explicit
+  rendering_strategy: project-decision

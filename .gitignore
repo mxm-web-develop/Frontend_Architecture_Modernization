@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# macOS
+.DS_Store
+
+# Editor / IDE
+.vscode/
+.idea/
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Live runtime demo / scratch
+migration/system/live-baseline-demo/
+migration/system/live-baseline/
+
+# Patch feedback / scratch notes (not part of the skill itself)
+2026-09-08-live-runtime-evidence.patch.md
+
+# Real credentials must NEVER enter the repo
+.env
+.env.*
+*.pem
+*.key

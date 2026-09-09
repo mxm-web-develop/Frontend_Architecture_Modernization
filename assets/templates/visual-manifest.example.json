@@ -1,0 +1,27 @@
+{
+  "schema_version": "1",
+  "domain": "users",
+  "environment": {
+    "browser": "chromium",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "locale": "zh-CN",
+    "timezone": "Asia/Shanghai",
+    "color_scheme": "light"
+  },
+  "scenarios": [
+    {
+      "id": "USER-LIST-default",
+      "capability": "CAP-USER-001",
+      "policy": "STRICT_PRESERVE",
+      "legacy_commit": "REPLACE_ME",
+      "fixture": "USER-LIST-FIXTURE-001",
+      "baseline": "evidence/visual/legacy/USER-LIST-default.png",
+      "target": "evidence/visual/target/USER-LIST-default.png",
+      "diff": "evidence/visual/diff/USER-LIST-default.png",
+      "status": "PENDING"
+    }
+  ]
+}

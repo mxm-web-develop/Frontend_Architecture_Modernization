@@ -1,0 +1,17 @@
+domain: __DOMAIN__
+state: DISCOVERED
+legacy:
+  baseline_commit: __LEGACY_BASE__
+  last_checked_commit: __LEGACY_BASE__
+gates:
+  functional: PENDING
+  visual: PENDING
+  architecture: PENDING
+  traceability: PENDING
+blockers: []
+unknowns: []
+state_commit: null
+state_history: []
+gate_evidence: {}
+gate_reasons: {}
+gate_history: []
