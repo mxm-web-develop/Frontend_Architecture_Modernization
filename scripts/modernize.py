@@ -22,6 +22,7 @@ from engine.assessment.domain_affinity import build as affinity_build
 from engine.normalization import normalize as normalize_facts, remediation_from_assessment
 from engine.command_discovery import discover as discover_commands
 from engine.reporting import build_system as report_system
+from engine.human_docs import build_all as build_human_docs
 from engine.domain_registry import create as domain_create
 from engine.capability_registry import approve as capability_approve
 from engine.state.project_machine import transition as project_transition, PROJECT_STATES
@@ -143,6 +144,16 @@ def _advance_project_if_possible(repo:Path,target_state:str):
         pass
 
 
+
+def refresh_reports(repo:Path, include_machine=True, include_human=True):
+    outputs=[]
+    if include_machine:
+        outputs.append(report_system(repo))
+    if include_human:
+        outputs.extend(build_human_docs(repo))
+    return outputs
+
+
 def analyze(args):
     repo=Path(args.repo).resolve(); _,profile,legacy=project_context(repo); adapter=args.adapter or detect_adapter(legacy)
     out=repo/'migration/system/raw-analysis'; out.mkdir(parents=True,exist_ok=True)
@@ -154,13 +165,13 @@ def analyze(args):
     if rc!=0: return rc
     manifest=out/'analysis-manifest.json'
     if manifest.exists():
-        data=json.loads(manifest.read_text(encoding='utf-8')); data['adapter_version']='1.5.1'; manifest.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+        data=json.loads(manifest.read_text(encoding='utf-8')); data['adapter_version']='1.6.0'; manifest.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     current=model_current_system(repo,legacy,out,adapter)
     normalized=normalize_facts(repo)
     current=load_yaml(repo/'governance/current-system.yaml')
     commands=discover_commands(repo,legacy)
     _advance_project_if_possible(repo,'CURRENT_SYSTEM_MODELED')
-    report_system(repo)
+    refresh_reports(repo)
     print(yaml.safe_dump({'current_system':current,'normalized_facts':normalized,'command_discovery':commands.get('discovery')},sort_keys=False,allow_unicode=True))
     return 0
 
@@ -169,7 +180,7 @@ def assess(args):
     repo=Path(args.repo).resolve(); _,_,legacy=project_context(repo)
     if not (repo/'governance/current-system.yaml').exists() or load_yaml(repo/'governance/current-system.yaml').get('status')!='MODELED':
         raise SystemExit('Current system is not modeled. Run `modernize analyze` first.')
-    data=architecture_assess(repo,legacy); remediation=remediation_from_assessment(repo); _advance_project_if_possible(repo,'ARCHITECTURE_ASSESSED'); report_system(repo); print(yaml.safe_dump({'assessment':data,'remediation_items':len(remediation.get('items') or [])},sort_keys=False,allow_unicode=True)); return 0
+    data=architecture_assess(repo,legacy); remediation=remediation_from_assessment(repo); _advance_project_if_possible(repo,'ARCHITECTURE_ASSESSED'); refresh_reports(repo); print(yaml.safe_dump({'assessment':data,'remediation_items':len(remediation.get('items') or [])},sort_keys=False,allow_unicode=True)); return 0
 
 
 def framework_cmd(args):
@@ -177,7 +188,7 @@ def framework_cmd(args):
     if args.action=='recommend':
         assessment=load_yaml(repo/'governance/architecture-assessment.yaml') if (repo/'governance/architecture-assessment.yaml').exists() else {}
         if assessment.get('status') not in {'COMPLETE','APPROVED'}: raise SystemExit('Run `modernize assess` before framework recommendation.')
-        data=framework_recommend(repo); print(yaml.safe_dump(data,sort_keys=False,allow_unicode=True)); return 0
+        data=framework_recommend(repo); refresh_reports(repo); print(yaml.safe_dump(data,sort_keys=False,allow_unicode=True)); return 0
     if args.action=='list':
         if not p.exists(): raise SystemExit('framework-strategy.yaml missing')
         print(p.read_text(encoding='utf-8')); return 0
@@ -186,7 +197,7 @@ def framework_cmd(args):
         if assessment.get('status') not in {'COMPLETE','APPROVED'}: raise SystemExit('Architecture assessment must be COMPLETE/APPROVED before framework selection.')
         try: data=framework_select(repo,args.option,args.confirmed_by,args.decision,args.framework)
         except ValueError as exc: print('FAIL:',exc); return 1
-        _advance_project_if_possible(repo,'FRAMEWORK_STRATEGY_CONFIRMED'); report_system(repo); print('PASS: framework strategy confirmed'); print(yaml.safe_dump(data,sort_keys=False,allow_unicode=True)); return 0
+        _advance_project_if_possible(repo,'FRAMEWORK_STRATEGY_CONFIRMED'); refresh_reports(repo); print('PASS: framework strategy confirmed'); print(yaml.safe_dump(data,sort_keys=False,allow_unicode=True)); return 0
     return 1
 
 
@@ -207,7 +218,7 @@ def module_cmd(args):
     if args.action=='list': print(reg.read_text(encoding='utf-8') if reg.exists() else 'schema_version: "1"\nmodules: {}'); return 0
     try: item=module_create(repo,SKILL_ROOT,args.id,args.name,args.path)
     except ValueError as exc: print('FAIL:',exc); return 1
-    print(yaml.safe_dump(item,sort_keys=False,allow_unicode=True)); return 0
+    refresh_reports(repo); print(yaml.safe_dump(item,sort_keys=False,allow_unicode=True)); return 0
 
 
 def validate(args):
@@ -232,7 +243,7 @@ def project_cmd(args):
     if errors:
         for e in errors: print('ERROR:',e)
         return 1
-    print(f'PASS: project -> {args.state}')
+    refresh_reports(repo); print(f'PASS: project -> {args.state}')
     return 0
 
 def domain_cmd(args):
@@ -241,14 +252,67 @@ def domain_cmd(args):
         p=repo/'migration/registry.yaml'; print(p.read_text(encoding='utf-8') if p.exists() else 'domains: {}'); return 0
     try: item=domain_create(repo,SKILL_ROOT,args.id,args.name,args.candidate,args.decision)
     except ValueError as exc: print('FAIL:',exc); return 1
-    print('PASS: confirmed domain scaffolded'); print(yaml.safe_dump(item,sort_keys=False,allow_unicode=True)); return 0
+    refresh_reports(repo); print('PASS: confirmed domain scaffolded'); print(yaml.safe_dump(item,sort_keys=False,allow_unicode=True)); return 0
+
+
+def docs_cmd(args):
+    repo=Path(args.repo).resolve()
+    path=repo/'governance/human-documentation.yaml'
+    if not path.exists():
+        raise SystemExit('human-documentation.yaml missing; run bootstrap or upgrade-control-plane first')
+    data=load_yaml(path)
+    if args.action=='show':
+        print(path.read_text(encoding='utf-8'))
+        return 0
+    if args.action=='build':
+        outputs=build_human_docs(repo)
+        for out in outputs: print('+',out.relative_to(repo))
+        return 0
+    if args.action=='set-project':
+        if args.name is not None: data['project_name']=args.name
+        if args.summary is not None: data['project_summary']=args.summary
+    elif args.action=='label':
+        if not args.key or not args.value: raise SystemExit('docs label requires <key> <value>')
+        data.setdefault('business_area_labels',{})[args.key]=args.value
+    elif args.action=='domain-description':
+        if not args.key or not args.value: raise SystemExit('docs domain-description requires <domain> <description>')
+        data.setdefault('domain_descriptions',{})[args.key]=args.value
+    elif args.action=='order':
+        order=[x for x in [args.key,args.value,*(args.items or [])] if x]
+        if not order: raise SystemExit('docs order requires at least one business-area key/label')
+        data['migration_order']=order
+    elif args.action=='note':
+        note=args.key or args.value
+        if not note: raise SystemExit('docs note requires quoted text')
+        data.setdefault('notes',[]).append(note)
+    save_yaml(path,data)
+    outputs=build_human_docs(repo)
+    print('PASS: human documentation semantics updated')
+    for out in outputs: print('+',out.relative_to(repo))
+    return 0
+
 
 def report_cmd(args):
     repo=Path(args.repo).resolve()
+    if args.kind=='machine':
+        out=report_system(repo)
+        print(f'PASS: generated technical appendix {out.relative_to(repo)}')
+        return 0
+    if args.kind=='human':
+        outputs=build_human_docs(repo)
+        print('PASS: generated human documentation')
+        for out in outputs:
+            print('+',out.relative_to(repo))
+        return 0
     if args.kind in {'system','all'}:
-        out=report_system(repo); print(f'PASS: generated {out.relative_to(repo)}')
-    return 0
-
+        outputs=refresh_reports(repo)
+        primary=repo/'docs/modernization/project-overview.md'
+        print(f'PASS: generated modernization documentation; start with {primary.relative_to(repo)}')
+        for out in outputs:
+            try: print('+',out.relative_to(repo))
+            except Exception: pass
+        return 0
+    return 1
 
 def capability_cmd(args):
     repo=Path(args.repo).resolve()
@@ -258,7 +322,7 @@ def capability_cmd(args):
         item=capability_approve(repo,args.candidate,args.domain,args.id,args.name,args.disposition,args.decision)
     except ValueError as exc:
         print('FAIL:',exc); return 1
-    print('PASS: capability candidate approved'); print(yaml.safe_dump(item,sort_keys=False,allow_unicode=True)); return 0
+    refresh_reports(repo); print('PASS: capability candidate approved'); print(yaml.safe_dump(item,sort_keys=False,allow_unicode=True)); return 0
 
 
 def transition_cmd(args):
@@ -268,7 +332,7 @@ def transition_cmd(args):
     if errors:
         for e in errors: print('ERROR:',e)
         return 1
-    print(f'PASS: {args.domain} -> {args.state}'); return 0
+    refresh_reports(repo); print(f'PASS: {args.domain} -> {args.state}'); return 0
 
 
 def _sha256(path:Path):
@@ -406,7 +470,8 @@ def status_cmd(args):
     fw=load_yaml(repo/'governance/framework-strategy.yaml') if (repo/'governance/framework-strategy.yaml').exists() else {}
     scope=load_yaml(repo/'governance/scope-register.yaml') if (repo/'governance/scope-register.yaml').exists() else {'items':[]}
     candidates=load_yaml(repo/'migration/system/capability-candidates.yaml') if (repo/'migration/system/capability-candidates.yaml').exists() else {'candidates':[]}
-    report=repo/'migration/system/migration-master-report.md'
+    human_report=repo/'docs/modernization/project-overview.md'
+    machine_report=repo/'migration/system/machine-analysis-report.md'
     print(json.dumps({
       'project_state':project_status.get('state'),
       'current_system':current.get('status'),
@@ -415,7 +480,8 @@ def status_cmd(args):
       'selected_framework':(fw.get('selected') or {}).get('framework'),
       'capability_candidates':len(candidates.get('candidates') or []),
       'domains':rows,
-      'system_report':str(report.relative_to(repo)) if report.exists() else None,
+      'human_report':str(human_report.relative_to(repo)) if human_report.exists() else None,
+      'machine_report':str(machine_report.relative_to(repo)) if machine_report.exists() else None,
       'deferred_new_requirements':[x.get('id') for x in scope.get('items',[]) if x.get('type')=='NEW_REQUIREMENT']
     },ensure_ascii=False,indent=2))
     return 0
@@ -425,7 +491,7 @@ def upgrade_control_plane(args):
     if not marker.exists(): raise SystemExit('not an existing modernization project')
     if not (repo/'governance/project-status.yaml').exists(): save_yaml(repo/'governance/project-status.yaml',{'schema_version':'1','state':'DISCOVERED','state_commit':None,'history':[]})
     project=load_yaml(repo/'governance/project.yaml'); project.setdefault('modernization',{'scope_mode':'brownfield-new-repository','new_requirements':'defer','framework_strategy':'undecided-until-confirmed'}); save_yaml(repo/'governance/project.yaml',project); lang=(project.get('language') or {}).get('human_documentation') or 'en'; replacements={'__HUMAN_LANG__':lang}
-    for name in ('modernization-constitution.yaml','current-system.yaml','framework-strategy.yaml','architecture-assessment.yaml','scope-register.yaml','modules.yaml'):
+    for name in ('modernization-constitution.yaml','current-system.yaml','framework-strategy.yaml','architecture-assessment.yaml','scope-register.yaml','modules.yaml','human-documentation.yaml'):
         src=SKILL_ROOT/'assets/templates/governance'/name; dst=repo/'governance'/name
         if not dst.exists(): dst.write_text(src.read_text(encoding='utf-8').replace('__HUMAN_LANG__',lang),encoding='utf-8')
     mappings={'ANALYZED':'CURRENT_SYSTEM_MODELED','MIGRATION_PLANNED':'REMEDIATION_PLANNED','MIGRATED':'MODERNIZED'}
@@ -435,12 +501,17 @@ def upgrade_control_plane(args):
             p=d/'status.yaml'
             if p.exists():
                 s=load_yaml(p); old=s.get('state'); s['state']=mappings.get(old,old); save_yaml(p,s)
-    data=json.loads(marker.read_text(encoding='utf-8')); data['skill_version']='1.5.1'; data['scope']='brownfield-new-repository'; marker.write_text(json.dumps(data,indent=2)+'\n',encoding='utf-8')
-    print('PASS: control plane upgraded. Run analyze/assess/framework recommend, then explicitly confirm framework strategy before advancing target design.'); return 0
+    schema_dst=repo/'governance/schemas'; schema_dst.mkdir(parents=True,exist_ok=True)
+    for src in (SKILL_ROOT/'schemas').glob('*.json'):
+        (schema_dst/src.name).write_text(src.read_text(encoding='utf-8'),encoding='utf-8')
+    data=json.loads(marker.read_text(encoding='utf-8')); data['skill_version']='1.6.0'; data['scope']='brownfield-new-repository'; marker.write_text(json.dumps(data,indent=2)+'\n',encoding='utf-8')
+    if (repo/'migration/system/raw-analysis/analysis-manifest.json').exists():
+        refresh_reports(repo)
+    print('PASS: control plane upgraded. Human documentation is under docs/modernization/. Re-run analyze/assess if machine facts need refreshing.'); return 0
 
 
 def build_parser():
-    p=argparse.ArgumentParser(prog='modernize',description='Frontend Architecture Modernization v1.5.1 control plane'); sub=p.add_subparsers(dest='command',required=True)
+    p=argparse.ArgumentParser(prog='modernize',description='Frontend Architecture Modernization v1.6.0 control plane'); sub=p.add_subparsers(dest='command',required=True)
     d=sub.add_parser('doctor'); d.add_argument('--repo'); d.add_argument('--fix-install-name',action='store_true'); d.set_defaults(func=doctor)
     ie=sub.add_parser('install-engine'); ie.add_argument('--analyzer',action='store_true'); ie.add_argument('--visual',action='store_true'); ie.add_argument('--install-browser',action='store_true'); ie.set_defaults(func=install_engine)
     b=sub.add_parser('bootstrap'); b.add_argument('--target',required=True); b.add_argument('--legacy',required=True); b.add_argument('--profile',default=str(SKILL_ROOT/'assets/profiles/brownfield-modernization.yaml')); b.add_argument('--mode',default='cross-repository',choices=['cross-repository','in-place']); b.add_argument('--baseline'); b.add_argument('--human-language'); b.add_argument('--force',action='store_true'); b.set_defaults(func=bootstrap)
@@ -454,7 +525,8 @@ def build_parser():
     pj=sub.add_parser('project'); pj.add_argument('action',choices=['status','transition']); pj.add_argument('state',nargs='?'); pj.add_argument('--repo',default='.'); pj.set_defaults(func=project_cmd)
     dm=sub.add_parser('domain'); dm.add_argument('action',choices=['create','list']); dm.add_argument('id',nargs='?'); dm.add_argument('--name'); dm.add_argument('--candidate'); dm.add_argument('--decision'); dm.add_argument('--repo',default='.'); dm.set_defaults(func=domain_cmd)
     cp=sub.add_parser('capability'); cp.add_argument('action',choices=['list','approve']); cp.add_argument('candidate',nargs='?'); cp.add_argument('--domain'); cp.add_argument('--id'); cp.add_argument('--name'); cp.add_argument('--disposition',default='PRESERVE',choices=['PRESERVE','REPLACE','REMOVE']); cp.add_argument('--decision'); cp.add_argument('--repo',default='.'); cp.set_defaults(func=capability_cmd)
-    rp=sub.add_parser('report'); rp.add_argument('kind',choices=['system','all'],default='system',nargs='?'); rp.add_argument('--repo',default='.'); rp.set_defaults(func=report_cmd)
+    dc=sub.add_parser('docs'); dc.add_argument('action',choices=['show','build','set-project','label','domain-description','order','note']); dc.add_argument('key',nargs='?'); dc.add_argument('value',nargs='?'); dc.add_argument('items',nargs='*'); dc.add_argument('--name'); dc.add_argument('--summary'); dc.add_argument('--repo',default='.'); dc.set_defaults(func=docs_cmd)
+    rp=sub.add_parser('report'); rp.add_argument('kind',choices=['system','human','machine','all'],default='system',nargs='?'); rp.add_argument('--repo',default='.'); rp.set_defaults(func=report_cmd)
     t=sub.add_parser('transition'); t.add_argument('domain'); t.add_argument('state'); t.add_argument('--repo',default='.'); t.set_defaults(func=transition_cmd)
     rc=sub.add_parser('run-check'); rc.add_argument('gate',choices=['functional','architecture','traceability']); rc.add_argument('domain'); rc.add_argument('--command'); rc.add_argument('--command-key'); rc.add_argument('--cwd'); rc.add_argument('--repo',default='.'); rc.set_defaults(func=run_check)
     g=sub.add_parser('gate'); g.add_argument('domain'); g.add_argument('gate',choices=['functional','visual','architecture','traceability']); g.add_argument('status',choices=['PENDING','PASS','FAIL','WAIVED','NOT_APPLICABLE']); g.add_argument('--evidence',action='append',default=[]); g.add_argument('--reason'); g.add_argument('--repo',default='.'); g.set_defaults(func=gate)

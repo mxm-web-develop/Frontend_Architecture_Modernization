@@ -68,29 +68,12 @@ gates:
   traceability: required
 visual:
   recommended_tool: playwright
-  # v1.6: baseline 默认走线上；live_runtime.url 为空时回退到 legacy_build（并在 module 开工时显式确认）
-  baseline_source: live_runtime
-  baseline_fallback: legacy_build
+  baseline_source: legacy
   auto_update_failed_baseline: prohibited
   deterministic_fixture: required_for_strict
   default_viewport:
     width: 1440
     height: 900
-# === v1.6 P7 新增：live runtime 与 delivery mode 配置 ===
-# 留证原则：线上可访问时，UI/UX 真相以线上为准；legacy build 仅作为辅助 baseline
-live_runtime:
-  url: ""                  # 生产/线上入口；空字符串代表未启用 live evidence
-  auth:
-    type: ""               # cookie | bearer | none
-    selector: ""           # 描述如 "Cookie:SESSION=xxx"，**不**保存真实凭证
-  required: false          # true 时 STRICT_PRESERVE 必须用 live baseline；IMPLEMENTING 强制 live-baseline 已落
-  capture:
-    driver: ""             # playwright | puppeteer | cursor-browser | manual
-    output_dir: migration/system/live-baseline
-# === v1.6 P5 新增：delivery mode（默认 module-loop）===
-delivery:
-  mode: module-loop        # module-loop | legacy-phase
-project_size: large        # small | medium | large — 决定 mode 默认值
 documentation:
   machine_truth_root: governance
   migration_truth_root: migration

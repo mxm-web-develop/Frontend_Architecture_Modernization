@@ -92,14 +92,18 @@ def build(repo:Path,skill_root:Path):
 
 ## 新 Agent 必须先读
 
-1. 根目录 `AGENTS.md`
-2. `handoff/system-context.yaml`
-3. `governance/modernization-constitution.yaml`
-4. `governance/dependency-rules.yaml`
-5. `governance/commands.yaml`
-6. 当前开发 Module 的 `module.manifest.yaml` 与 README
-7. `handoff/known-issues.yaml`
-8. 相关 ADR / Decisions
+1. `docs/modernization/project-overview.md`
+2. `docs/modernization/architecture-modernization-plan.md`
+3. `docs/modernization/progress.md`
+4. 当前业务模块对应的 `docs/modernization/domains/<domain>.md`
+5. 根目录 `AGENTS.md`
+6. `handoff/system-context.yaml`
+7. `governance/modernization-constitution.yaml`
+8. `governance/dependency-rules.yaml`
+9. `governance/commands.yaml`
+10. `handoff/known-issues.yaml`
+
+如果需要 Stable ID、Route/API 原始事实或 Evidence，再进入 `migration/**`。
 
 ## 开发边界
 
@@ -135,7 +139,9 @@ Framework 只负责上述统一架构在当前技术栈中的实现细节，不�
 
 Modernization is complete for `{project.get('project_id')}`. Continue with the normal product-development workflow.
 
-Read `AGENTS.md`, `handoff/system-context.yaml`, the modernization constitution, dependency rules, commands, module manifests, known issues, and relevant ADRs before making product changes.
+Start with `docs/modernization/project-overview.md`, the modernization plan,
+progress, and the relevant Domain guide. Use `governance/**`, `migration/**`, and
+`handoff/system-context.yaml` when machine-level facts or evidence are needed.
 """
         arch="# Architecture Summary\n\nSee `governance/modernization-constitution.yaml`, dependency rules, module manifests and system context.\n"
         dev="# Development Handoff Guide\n\nUse `governance/commands.yaml` and module-level contracts. Net-new requirements now belong to normal product development.\n"

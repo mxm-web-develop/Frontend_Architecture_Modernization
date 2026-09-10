@@ -2,19 +2,6 @@ schema_version: '1'
 project_id: target-frontend
 profile: brownfield-modernization
 migration_mode: cross-repository
-# === v1.6 P7 新增：live runtime 与 delivery mode（与 profile 模板字段对应）===
-live_runtime:
-  url: ""                  # 线上入口 URL；空字符串 = 关闭 live evidence
-  auth:
-    type: ""               # cookie | bearer | none
-    selector: ""           # 描述（**不**保存真实凭证）
-  required: false          # true 时 STRICT_PRESERVE / IMPLEMENTING 强制使用 live baseline
-  capture:
-    driver: ""             # playwright | puppeteer | cursor-browser | manual
-    output_dir: migration/system/live-baseline
-delivery:
-  mode: module-loop        # module-loop | legacy-phase（仅在 project_size=small 或用户显式 opt-in 时才允许 legacy-phase）
-project_size: large
 modernization:
   scope_mode: brownfield-new-repository
   new_requirements: defer

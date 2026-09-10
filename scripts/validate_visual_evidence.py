@@ -35,26 +35,11 @@ def main():
         label = s.get("id") or f"scenario[{i}]"
         if s.get("policy") not in VALID_POLICIES:
             errors.append(f"{label}: invalid/missing policy")
-        # === v1.6 P6：baseline_source 必填，且 STRICT_PRESERVE 必须为 live_runtime ===
-        bs = s.get("baseline_source")
-        if not bs:
-            errors.append(f"{label}: baseline_source required (live_runtime | legacy_build)")
-        elif bs not in {"live_runtime", "legacy_build"}:
-            errors.append(f"{label}: baseline_source must be live_runtime or legacy_build (got {bs!r})")
         if s.get("policy") == "STRICT_PRESERVE":
             if not s.get("legacy_commit"):
                 errors.append(f"{label}: legacy_commit required")
             if not s.get("fixture"):
                 errors.append(f"{label}: deterministic fixture required")
-            if bs != "live_runtime":
-                errors.append(
-                    f"{label}: STRICT_PRESERVE requires baseline_source=live_runtime "
-                    "(legacy build alone is not authoritative; v1.6 P6)"
-                )
-            lr = s.get("live_runtime") or {}
-            for k in ("url", "captured_at", "commit", "screenshot_sha256"):
-                if not lr.get(k):
-                    errors.append(f"{label}: STRICT_PRESERVE requires live_runtime.{k}")
 
     if not errors:
         errors.extend(validate_visual_result(repo, args.result, manifest.parent))

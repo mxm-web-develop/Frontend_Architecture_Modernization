@@ -80,6 +80,7 @@ def structure_checks(repo:Path,domain:str|None):
       ("governance/framework-strategy.yaml","framework-strategy.schema.json"),
       ("governance/architecture-assessment.yaml","architecture-assessment.schema.json"),
       ("governance/modernization-constitution.yaml","modernization-constitution.schema.json"),
+      ("governance/human-documentation.yaml","human-documentation.schema.json"),
       ("migration/registry.yaml","registry.schema.json"),
       ("migration/system/legacy-system-map.yaml","legacy-system-map.schema.json"),
       ("migration/system/domain-map.yaml","domain-map.schema.json"),
@@ -205,13 +206,39 @@ def completeness_checks(repo:Path,domain:str|None):
         if state=="MODERNIZED":
             report=d/"modernization-plan.md"
             if not report.exists(): errors.append(f"{name}: MODERNIZED but modernization-plan.md missing")
-    report=repo/"migration/system/migration-master-report.md"
-    if project_state in {"ARCHITECTURE_ASSESSED","FRAMEWORK_STRATEGY_CONFIRMED","TARGET_FOUNDATION_READY","MODERNIZATION_ACTIVE","HANDOFF_READY"}:
-        if not report.exists():
-            warnings.append("system report has not been generated; run `modernize report system`")
+    machine_report=repo/"migration/system/machine-analysis-report.md"
+    human_root=repo/"docs/modernization"
+    human_required=[
+        human_root/"README.md",
+        human_root/"project-overview.md",
+        human_root/"architecture-modernization-plan.md",
+        human_root/"progress.md",
+        human_root/"technical-analysis.md",
+    ]
+    if project_state in {"CURRENT_SYSTEM_MODELED","ARCHITECTURE_ASSESSED","FRAMEWORK_STRATEGY_CONFIRMED","TARGET_FOUNDATION_READY","MODERNIZATION_ACTIVE","HANDOFF_READY"}:
+        if not machine_report.exists():
+            warnings.append("technical machine report has not been generated; run `modernize report system`")
         else:
-            text=report.read_text(encoding="utf-8",errors="replace")
-            if text.count("## ")<18: errors.append("migration-master-report.md does not contain the required 18 sections")
+            text=machine_report.read_text(encoding="utf-8",errors="replace")
+            if text.count("## ")<18:
+                errors.append("machine-analysis-report.md does not contain the required 18 technical sections")
+        missing_human=[str(x.relative_to(repo)) for x in human_required if not x.exists()]
+        if missing_human:
+            errors.append(f"human modernization documentation missing: {missing_human}; run `modernize report system`")
+        else:
+            import re
+            forbidden=[
+                (r"\bNone\b","Python None"),
+                (r"\bnull\b","raw null"),
+                (r"\bCAP-CAND-[A-Z0-9-]+\b","Capability candidate ID"),
+                (r"\bMOD-CAND-[A-Z0-9-]+\b","Domain candidate ID"),
+                (r"\bREM-[A-Z0-9-]+\b","Remediation ID"),
+            ]
+            for human_doc in [human_root/"project-overview.md",human_root/"architecture-modernization-plan.md",human_root/"progress.md"]:
+                content=human_doc.read_text(encoding="utf-8",errors="replace")
+                for pattern,label in forbidden:
+                    if re.search(pattern,content):
+                        errors.append(f"{human_doc.relative_to(repo)} exposes {label} in primary human text")
     return errors,warnings
 
 def evidence_checks(repo:Path,domain:str|None):

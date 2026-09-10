@@ -38,34 +38,6 @@
     "domain": {
       "type": "string"
     },
-    "route_coverage": {
-      "type": "object",
-      "description": "v1.6 P3: legacy 路由覆盖率；进入 MODERNIZED 必须 covered == total",
-      "required": ["covered", "total"],
-      "properties": {
-        "covered": { "type": "integer", "minimum": 0 },
-        "total": { "type": "integer", "minimum": 0 },
-        "missing": { "type": "array", "items": { "type": "string" } }
-      }
-    },
-    "capability_completeness": {
-      "type": "object",
-      "description": "v1.6 P3: 每 capability 必须 route/ui/api/flow 全为 true",
-      "additionalProperties": {
-        "type": "object",
-        "properties": {
-          "route": { "type": "boolean" },
-          "ui": { "type": "boolean" },
-          "api": { "type": "boolean" },
-          "flow": { "type": "boolean" }
-        }
-      }
-    },
-    "live_runtime_evidence_count": {
-      "type": "integer",
-      "minimum": 0,
-      "description": "v1.6 P1: domain/live-runtime 下已落 .json 证据数量"
-    },
     "capabilities": {
       "type": "array",
       "items": {

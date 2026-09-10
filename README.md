@@ -112,10 +112,18 @@ Assess:
 python <skill-path>/scripts/modernize.py assess --repo ../target-app
 ```
 
-Generate the system report:
+Generate human-facing modernization documentation:
 
 ```bash
 python <skill-path>/scripts/modernize.py report system --repo ../target-app
+```
+
+Start with:
+
+```text
+docs/modernization/project-overview.md
+docs/modernization/architecture-modernization-plan.md
+docs/modernization/progress.md
 ```
 
 Check status:
@@ -184,6 +192,14 @@ Status:
 python <skill-path>/scripts/modernize.py status --repo <target-repo>
 ```
 
+Improve human-facing project/business labels:
+
+```bash
+python <skill-path>/scripts/modernize.py docs label hall "Model Hall" --repo <target-repo>
+python <skill-path>/scripts/modernize.py docs set-project --name "TokenHub" --repo <target-repo>
+python <skill-path>/scripts/modernize.py docs build --repo <target-repo>
+```
+
 Analyze:
 
 ```bash
@@ -196,10 +212,22 @@ Assess:
 python <skill-path>/scripts/modernize.py assess --repo <target-repo>
 ```
 
-Report:
+Human documentation and technical appendix:
 
 ```bash
 python <skill-path>/scripts/modernize.py report system --repo <target-repo>
+```
+
+Human documentation only:
+
+```bash
+python <skill-path>/scripts/modernize.py report human --repo <target-repo>
+```
+
+Machine technical appendix only:
+
+```bash
+python <skill-path>/scripts/modernize.py report machine --repo <target-repo>
 ```
 
 Framework recommendation:

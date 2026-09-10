@@ -40,6 +40,13 @@ def _api_group(endpoint:str):
         return parts[1] if len(parts)>1 else first
     return first
 
+def _source_file(ref):
+    if not ref:
+        return None
+    if isinstance(ref, dict):
+        return ref.get('file') or None
+    return str(ref)
+
 def normalize(repo:Path):
     raw=repo/'migration/system/raw-analysis'
     current_path=repo/'governance/current-system.yaml'
@@ -61,7 +68,7 @@ def normalize(repo:Path):
             'method':key[0],'endpoint':endpoint,'sources':[],
             'confidence':((item.get('extraction') or {}).get('level') or 'STATIC_INFERRED')
         })
-        src=item.get('file') or item.get('source')
+        src=_source_file(item.get('file') or item.get('source'))
         if src and src not in row['sources']: row['sources'].append(src)
     unresolved_api=[x for x in api_signals if not x.get('resolved')]
     api_catalog={

@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Human Documentation Configuration",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "business_area_labels",
+    "notes",
+    "policy"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "project_name": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "project_summary": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "business_area_labels": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "domain_descriptions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "migration_order": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "policy": {
+      "type": "object",
+      "properties": {
+        "show_internal_ids_in_main_text": {
+          "type": "boolean"
+        },
+        "show_raw_enums_in_main_text": {
+          "type": "boolean"
+        },
+        "render_null_as_none": {
+          "type": "boolean"
+        },
+        "machine_evidence_location": {
+          "type": "string"
+        },
+        "human_docs_location": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

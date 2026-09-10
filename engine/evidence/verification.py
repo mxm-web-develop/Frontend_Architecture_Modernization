@@ -4,8 +4,6 @@ import json
 import hashlib
 import yaml
 
-from engine.runtime_capture import validate_runtime_manifest
-
 def resolve_ref(repo: Path, ref: str | Path) -> Path:
     p = Path(ref)
     return p.resolve() if p.is_absolute() else (repo / p).resolve()
@@ -181,14 +179,6 @@ def validate_gate_evidence(repo: Path, domain: str, status: dict, gate: str) -> 
     else:
         for ref in refs:
             errors.extend(validate_command_evidence(repo, ref, domain, gate))
-            # === v1.6 P1：live-runtime-snapshot / live-runtime-flow 证据也可挂在 functional / architecture / traceability 门下 ===
-            try:
-                data = _load_json(resolve_ref(repo, ref))
-                et = (data or {}).get("evidence_type")
-            except Exception:
-                et = None
-            if et in {"live-runtime-snapshot", "live-runtime-flow"}:
-                errors.extend(validate_runtime_manifest(repo, resolve_ref(repo, ref)))
         required_keys = required_command_keys(repo, gate)
         if required_keys:
             present = {command_evidence_key(repo, ref) for ref in refs}

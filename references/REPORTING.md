@@ -1,5 +1,17 @@
 # Reporting Standard
 
+## Human vs machine reporting
+
+The 18-section report is a technical appendix. It must not be used as the primary
+human modernization plan.
+
+Primary human-facing documents are generated under `docs/modernization/` and follow
+`references/HUMAN-DOCUMENTATION.md`.
+
+Internal IDs, raw enums, confidence labels and missing machine values belong in
+technical evidence. Human documents must express conclusions, reasons, actions and
+completion criteria in natural language.
+
 Reports should explain the system in natural language while using tables heavily for
 enumerated facts.
 

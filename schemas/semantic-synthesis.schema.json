@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Semantic Synthesis",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "language",
+    "project",
+    "current_system",
+    "framework_strategy",
+    "discovery",
+    "business_areas",
+    "architecture_concerns",
+    "confirmed_domains",
+    "unknowns",
+    "evidence"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "language": {
+      "type": "string"
+    },
+    "project": {
+      "type": "object"
+    },
+    "current_system": {
+      "type": "object"
+    },
+    "framework_strategy": {
+      "type": "object"
+    },
+    "discovery": {
+      "type": "object"
+    },
+    "business_areas": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "architecture_concerns": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "confirmed_domains": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "unknowns": {
+      "type": "array"
+    },
+    "human_notes": {
+      "type": "array"
+    },
+    "evidence": {
+      "type": "object"
+    }
+  }
+}

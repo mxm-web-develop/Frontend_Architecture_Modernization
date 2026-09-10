@@ -2,65 +2,19 @@
 
 ## 1.6.0
 
-### Live runtime evidence as first-class citizen
-- Added two new evidence types: `live-runtime-snapshot` (single URL visit) and
-  `live-runtime-flow` (multi-step browser interaction). They are recognized by
-  `gate-evidence.schema.json` and validated by
-  `engine/evidence/verification.py` through `engine.runtime_capture`.
-- Visual manifests for `STRICT_PRESERVE` scenarios now require
-  `baseline_source: live_runtime` plus a complete `live_runtime` sub-object
-  (`url`, `captured_at`, `commit`, `screenshot_sha256`). Legacy build alone is
-  rejected as the only baseline.
-- `validate_visual_evidence.py` enforces the new schema at the script level so
-  CI/agents cannot bypass the gate via plain YAML.
-
-### Module-Delivery Loop replaces W0/W1/W2/W3 partial staging
-- Added `profile.delivery.mode` (`module-loop` default; `legacy-phase` opt-in)
-  and `profile.project_size`. Medium and large projects must use Module-Delivery
-  Loop (see `references/WORKFLOW.md`).
-- Removed the implicit permission to ship "接口通 / UI 延后" splits across
-  modules. Each module now requires 100% route + UI + API + flow completeness
-  before transitioning to `MODERNIZED`.
-
-### Tighter MODERNIZED prerequisites
-- New domain-level files: `route-coverage.yaml` and `completeness/<cap_id>.yaml`.
-- `engine/state/machine.py` now fails `MODERNIZED` if any of:
-  - `route-coverage.covered < route-coverage.total`;
-  - `completeness.<cap_id>.{route, ui, api, flow}` is not `true`;
-  - `profile.live_runtime.required=true` and the capability has no
-    `live-runtime/<cap_id>*.json`.
-- `IMPLEMENTING` now requires `live-runtime/*.json` when
-  `live_runtime.required=true`.
-
-### Capability approval hardening
-- `engine/capability_registry.approve` rejects approvals when
-  `live_runtime.required=true` but no live baseline exists for that capability.
-- Default `ui.baseline_source` is now `live_runtime` when
-  `profile.live_runtime.url` is non-empty.
-
-### New engine module
-- `engine/runtime_capture.py` provides the Live Runtime contract: directory
-  layout, evidence record types, `LiveRuntimeSpec`, validation helpers. Driver
-  (playwright / puppeteer / cursor-browser / manual) is pluggable; the contract
-  is the source of truth.
-
-### References
-- `references/EVIDENCE-GOVERNANCE.md`: classification table now lists all four
-  evidence types and the live runtime baseline contract.
-- `references/DISCOVERY.md`: added `Live runtime baseline` section describing
-  the execution contract, immutability of baseline and fallback decision rule.
-- `references/VISUAL-PARITY.md`: added explicit truth-source priority (live
-  runtime > legacy build > legacy source) and the rule that legacy repo code
-  is implementation-mapping only, never UI/UX truth.
-- `references/WORKFLOW.md`: added Module-Delivery Loop and the `legacy-phase`
-  opt-in carve-out.
-
-### Profile / governance templates
-- `assets/profiles/legacy/vue2-dashboard-to-vue3-domain-app.yaml`
-- `assets/profiles/legacy/generic-frontend-modernization-v1.2.yaml`
-- `assets/templates/governance/project.yaml`
-all gained `live_runtime`, `delivery`, `project_size` blocks with safe defaults
-(empty URL + `required: false` + `mode: module-loop`).
+### Human planning & documentation
+- Added `migration/system/semantic-synthesis.yaml` as the derived bridge from Machine Truth to human documentation.
+- Added `governance/human-documentation.yaml` for project naming, business-area labels, notes, and human-rendering policy.
+- Added `docs/modernization/` as the primary human-facing documentation surface.
+- Added project overview, architecture modernization plan, progress report, technical-analysis index, and confirmed Domain guides.
+- Human documents translate missing values and lifecycle states into natural language instead of exposing `None`, `null`, raw enums, or candidate/remediation IDs.
+- Stable IDs remain available as machine evidence and only appear in technical/evidence sections of human Domain guides.
+- The modernization plan now describes global discovery plus rolling Domain implementation, including local Legacy re-analysis before implementation.
+- The previous 18-section report is now `migration/system/machine-analysis-report.md`, explicitly treated as a technical appendix.
+- `migration/system/migration-master-report.md` is retained as a compatibility bridge pointing readers to `docs/modernization/`.
+- `modernize report system` now generates both human documents and machine analysis; `report human` and `report machine` can refresh them independently.
+- Validation now requires the primary human documentation after system modeling and rejects `None`, raw `null`, candidate IDs, or remediation IDs in the primary human plan/overview/progress documents.
+- Handoff and AGENTS reading order now directs downstream agents to human project documentation before machine governance ledgers.
 
 ## 1.5.1
 

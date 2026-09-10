@@ -26,8 +26,7 @@
           "id",
           "capability",
           "policy",
-          "status",
-          "baseline_source"
+          "status"
         ],
         "properties": {
           "id": {
@@ -70,46 +69,8 @@
               "WAIVED",
               "NOT_APPLICABLE"
             ]
-          },
-          "baseline_source": {
-            "enum": [
-              "live_runtime",
-              "legacy_build"
-            ],
-            "description": "v1.6 P6: STRICT_PRESERVE 必须为 live_runtime；legacy_build 仅在 profile.live_runtime.required=false 且 live_runtime.url 为空时合法"
-          },
-          "live_runtime": {
-            "type": "object",
-            "description": "v1.6 P6: STRICT_PRESERVE 必须配套 live runtime evidence 字段",
-            "required": [
-              "url",
-              "captured_at",
-              "commit",
-              "screenshot_sha256"
-            ],
-            "properties": {
-              "url": { "type": "string", "format": "uri" },
-              "captured_at": { "type": "string" },
-              "commit": { "type": "string" },
-              "screenshot_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
-              "scenario_id": { "type": "string" }
-            }
           }
-        },
-        "allOf": [
-          {
-            "if": {
-              "properties": { "policy": { "const": "STRICT_PRESERVE" } },
-              "required": ["policy"]
-            },
-            "then": {
-              "properties": {
-                "baseline_source": { "const": "live_runtime" }
-              },
-              "required": ["live_runtime"]
-            }
-          }
-        ]
+        }
       }
     }
   }

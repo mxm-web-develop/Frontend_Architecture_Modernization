@@ -420,7 +420,7 @@ def main():
         'api_unresolved':len(unresolved),
     }
     manifest={
-        'schema_version':'1','adapter':a.adapter,'adapter_version':'1.5.1',
+        'schema_version':'1','adapter':a.adapter,'adapter_version':'1.6.0',
         'engine':'framework-aware-static',
         'parsed_files':len(files),
         'warnings':[

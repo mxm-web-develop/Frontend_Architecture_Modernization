@@ -14,206 +14,114 @@ compatibility: >-
   Agent Skills open standard. Designed for Codex and Cursor. Requires repository
   filesystem access and Git. Node.js is used by AST and visual tooling.
 metadata:
-  version: "1.6.0"
+  version: "2.0.0"
   domain: "frontend-architecture-modernization-governance"
   lifecycle: "discover-assess-confirm-transform-verify-handoff"
+
+changelog:
+  pending-v2.1-feedback:
+    - See `migration/feedback/SKILL_V2.1_FEEDBACK.md` for the post-v2.0
+      execution feedback that drove the v2.1 upgrade.
+  v2.0.0:
+    - Add mandatory "Multi-Dimensional Parity": per-page acceptance contract
+      (filter bar / table columns / operations / network), recursive capture
+      (every state, every filter, every action), field-level mirror, mock-
+      fidelity gate. v1.7 alone produced passing tests with fully wrong
+      output (wrong URLs, invented charts, invented series, missing columns,
+      excess columns, unwired actions); v2.0 closes those gaps.
+  v1.7.0:
+    - Add mandatory "Network-Alignment" section: per-page network-manifest.yaml
+      before any api/*.ts is written; legacy source code is no longer
+      sufficient evidence of an endpoint's existence or shape.
+  v1.6.0:
+    - Human Planning & Documentation Layer.
 ---
 
-## v1.6 Live Runtime Truth + Module-Delivery Loop
+## v1.6 Human Planning & Documentation Layer
 
-v1.6 is a behavior-anchoring release. It does not remove any v1.5.1 capability. It
-adds three hard rules that the Agent can no longer skip:
-
-1. **Live runtime evidence is a first-class citizen.** When the legacy production
-   URL is reachable, every UI/UX truth must come from a `live-runtime-snapshot` /
-   `live-runtime-flow` evidence captured against that URL. Legacy repo source code
-   may inform implementation mapping, but it is no longer treated as UI/UX truth.
-2. **Modules are delivered atomically.** Each module walks the full lifecycle
-   (route + UI + API + flow) before the next module starts. W2-Later, "deferred",
-   "本切片仅 ..." and similar partial labels are no longer accepted.
-3. **`STRICT_PRESERVE` must use a live baseline.** When `profile.live_runtime.required`
-   is true, `visual-manifest.json` must declare `baseline_source: live_runtime` with
-   a complete `live_runtime` sub-object. A legacy build baseline alone is rejected.
-
-The full set of patches applied for v1.6 is documented in
-`2026-09-08-live-runtime-evidence.patch.md` and rolled into the schema, engine and
-reference files in this skill. Implementation guidance is in
-`references/EVIDENCE-GOVERNANCE.md`, `references/DISCOVERY.md`,
-`references/VISUAL-PARITY.md` and `references/WORKFLOW.md`.
-
-### Delivery mode (default vs explicit)
-
-- Default mode = **Module-Delivery-Loop**: each module walks the full lifecycle
-  (see `references/WORKFLOW.md`). v1.6 enforces this for `profile.project_size`
-  of `medium` or `large`.
-- Explicit `legacy-phase-mode` is allowed only when `profile.project_size: small`
-  or `profile.delivery.mode: legacy-phase` is set at initialization. Even then,
-  any deferred capability must be backed by an explicit `decision: ADR-*`.
-
-### Live runtime configuration
-
-`governance/project.yaml` (and `assets/profiles/legacy/*.yaml` templates) declare:
-
-```yaml
-live_runtime:
-  url: ""           # production entry; empty = disabled
-  auth:
-    type: ""        # cookie | bearer | none
-    selector: ""    # description only; never store real credentials
-  required: false   # when true, STRICT_PRESERVE / IMPLEMENTING enforce live baseline
-  capture:
-    driver: ""      # playwright | puppeteer | cursor-browser | manual
-    output_dir: migration/system/live-baseline
-```
-
-When `live_runtime.required=true` but `live_runtime.url` is empty, the Agent MUST
-stop and ask the user for the live URL. Default is `required=false`.
-
-## v1.5.1 Discovery Closure
-
-v1.5.1 is a patch-level closure release. It does not change the modernization
-lifecycle or Skill scope.
-
-Discovery hardening:
-
-- TypeScript generic request wrappers are supported, including nested generics:
-  `portalRequest<Model>('/x')` and
-  `portalRequestPage<PageResult<Model>>('/x')`.
-- Request wrapper families may contain `Request` in the identifier, so
-  `portalRequestPage(...)` is treated as request evidence.
-- Route-object qualification uses top-level object keys only. Nested
-  `query.redirect` / `meta.redirect` fields do not turn navigation objects into
-  route definitions.
-- Common route-builder calls such as
-  `add('/old', '/new')` are retained as HEURISTIC route evidence.
-- When API discovery is PARTIAL, `api_data_flow.score` is `null`. An incomplete
-  discovery surface must not receive an optimistic architecture-quality score.
-- Markdown documentation endpoints such as `/api.md` are excluded from the API
-  catalog.
-- `modernize doctor --fix-install-name` can safely rename a suffixed installation
-  folder when the canonical destination does not already exist.
-
-## v1.5 Discovery Accuracy Hardening
-
-v1.5 hardens Discovery so generated reports are less likely to present incomplete
-static evidence as product truth.
-
-Key rules:
-
-- Relative Vue/React route object paths such as `path: 'hall'` are valid route
-  evidence when the containing object is route-shaped.
-- Navigation objects such as `router.push({ path: '/' })` are not route definitions.
-- Custom request wrappers ending in `Request`, `Api`, `Client`, `Http` or `Fetch`
-  are scanned for literal endpoints.
-- Dynamic request calls are recorded as unresolved API signals instead of being
-  silently ignored.
-- If request signals exist but zero concrete API endpoints are recovered,
-  `modernize validate --completeness` MUST fail.
-- `packages/*` workspace boundaries and route segments may produce confirmable
-  Domain Candidates.
-- infrastructure folders such as `src/config`, `src/data`, `src/lib`,
-  `src/types` and `src/requests` are Structural Hints only and cannot be confirmed
-  directly as Domains.
-- Architecture remediation entries must preserve source file identity.
-- The system report must include API discovery status, unresolved API signals,
-  cross-area/package import summaries and remediation file paths.
-
-## v1.4 Discovery & Documentation Engine
-
-v1.4 closes the gap between the executable governance protocol and the factual,
-human-readable project knowledge needed for long-running brownfield reconstruction.
-
-### Project vs Domain lifecycle
-
-Project lifecycle owns global discovery and architecture decisions:
+Machine facts and human documentation are separate products.
 
 ```text
-DISCOVERED
-→ CURRENT_SYSTEM_MODELED
-→ ARCHITECTURE_ASSESSED
-→ FRAMEWORK_STRATEGY_CONFIRMED
-→ TARGET_FOUNDATION_READY
-→ MODERNIZATION_ACTIVE
-→ HANDOFF_READY
+Machine Truth
+→ Semantic Synthesis
+→ Human Documentation
 ```
 
-A confirmed Domain owns only its reconstruction lifecycle:
+`governance/**` and `migration/**` remain authoritative for stable IDs, enums,
+confidence, raw routes/APIs/imports, evidence, hashes and lifecycle state.
+
+`migration/system/semantic-synthesis.yaml` is a derived semantic layer that groups
+those facts into business areas, natural-language architecture concerns, human state
+labels, implementation priorities and unresolved questions.
+
+Primary human documentation lives under:
 
 ```text
-DISCOVERED
-→ CAPABILITY_MODELED
-→ RESPONSIBILITY_REVIEWED
-→ TARGET_CONTRACT_DEFINED
-→ REMEDIATION_PLANNED
-→ IMPLEMENTING
-→ FUNCTIONAL_PARITY_CHECK
-→ VISUAL_PARITY_CHECK
-→ ARCHITECTURE_CHECK
-→ TRACEABILITY_CHECK
-→ MODERNIZED
+docs/modernization/
+├── README.md
+├── project-overview.md
+├── architecture-modernization-plan.md
+├── progress.md
+├── technical-analysis.md
+└── domains/
 ```
 
-Do not create Domain ledgers during bootstrap. Discovery first produces candidate evidence.
-Create a Domain only after semantic review:
+### Human-document invariant
 
-```bash
-modernize domain create users --candidate MOD-CAND-001 --repo .
-```
+Primary human documents explain:
 
-### Discovery truth pipeline
+- what the system is;
+- what major business areas exist;
+- what is wrong with the current architecture;
+- why the target direction is recommended;
+- what to implement first;
+- what must be re-checked in Legacy before each Domain starts;
+- what completion means;
+- current progress and next action.
 
-```text
-Framework-aware analyzer
-→ raw-analysis/*
-→ canonical normalizer
-→ api-catalog / legacy-system-map / domain candidates /
-  capability candidates / runtime unknowns
-→ semantic Agent review
-→ approved CAP-* / confirmed Domains
-```
+Do not render raw machine values such as `None`, `null`, candidate IDs,
+remediation IDs, confidence enums or lifecycle enums as primary prose.
 
-Candidate facts (`CAP-CAND-*`, `MOD-CAND-*`) are not approved product facts.
-The Agent must review evidence before creating stable `CAP-*` or confirmed Domain ownership.
+Stable IDs are citations/evidence and may appear only in technical appendices or the
+technical-evidence section of a Domain guide.
 
-### Reporting is executable
-
-Run:
+### Reporting commands
 
 ```bash
 modernize report system --repo .
 ```
 
-The generated master report has 18 sections. Missing knowledge must be rendered as
-`UNKNOWN` / incomplete evidence, never as an empty heading that looks complete.
-
-### Validation is layered
+generates both human documentation and the technical machine appendix. Human readers
+start with `docs/modernization/project-overview.md`.
 
 ```bash
-modernize validate --structure --repo .
-modernize validate --state --repo .
-modernize validate --completeness --repo .
-modernize validate --all --repo .
+modernize report human --repo .
+modernize report machine --repo .
 ```
 
-- `structure`: schema/files/language.
-- `state`: lifecycle prerequisites and gate evidence.
-- `completeness`: whether discovery facts are sufficient for the current state.
-- `all`: all layers plus evidence verification.
+can refresh the two projections independently.
 
-A structure PASS does not mean the system has been fully understood.
+The previous 18-section report is retained as
+`migration/system/machine-analysis-report.md`. The historical
+`migration/system/migration-master-report.md` path is only a compatibility bridge.
 
-### Framework-aware discovery
+### Planning model
 
-v1.4 detects Vue2, Vue3, React and Next.js. Vue2 keeps the AST adapter; Vue3/React/
-Next.js use framework-aware static discovery for common route structures and Next.js
-filesystem routes. Dynamic/custom routing must be recorded as runtime/custom-manifest
-evidence rather than silently treated as zero routes.
+The human plan must describe **global discovery + rolling Domain implementation**:
 
-### Scope remains unchanged
+```text
+Global Legacy Discovery
+→ stable architecture/framework direction
+→ choose next business Domain
+→ re-read local Legacy evidence
+→ refine Capability/Target Contract
+→ implement in new repository
+→ parity/evidence
+→ refresh docs
+```
 
-This Skill does not implement net-new product requirements. Its responsibility remains:
-read-only Legacy → new Repository → architecture modernization + complete product
-behavior reproduction → evidence → HANDOFF_READY.
+Do not present the initial Discovery output as a once-for-all frozen implementation
+plan.
 
 
 # Frontend Architecture Modernization & Governance
@@ -366,6 +274,81 @@ python <skill>/scripts/modernize.py status --repo <target>
 ```
 
 Resume durable state. Do not restart completed discovery without a legacy-delta reason.
+
+### Network-Alignment (mandatory, v1.7)
+
+**You cannot reproduce a legacy page's API integration by reading legacy source
+code alone.** Legacy repositories drift from production: the bundled JS shipped
+to `prod-url` often contains endpoints, parameters and response shapes that no
+longer exist in the legacy source tree, and vice versa. Field names that look
+"obvious" from source inspection are routinely wrong.
+
+**Before writing any `api/*.ts` file for a Domain, you MUST produce a
+`migration/<domain>/network-manifest.yaml`** that records **every** HTTP request
+observed in the running production page:
+
+```yaml
+# migration/<domain>/network-manifest.yaml
+page: /model/lcy-model/lcy-model-list
+captured_at: 2026-09-10T15:55:00+08:00
+captured_url: http://<legacy-prod-host>
+capture_method: browser DevTools Network panel + curl reprobe
+session:
+  cookie_required: true
+  groupId: <project id used when capturing>
+requests:
+  - method: GET
+    url: /base/dict/getMulti
+    params: { dictTypes: "LLMModelType,DL,ML,largeModelFramework,largeModelFormat,largeModelAlgorithm" }
+    response_shape: { status: "200", data: { LLMModelType: [{key, desc, children}], ... } }
+    purpose: "模型类型/大模型框架/格式/算法 批量字典"
+    legacy_source_ref: src/store/modules/model.js::apiGetSysCodes
+  - method: POST
+    url: /lcy/model/queryModelList
+    params: { current, pageSize, groupId, modelTypeCategory, modelName, learnMethod, startTime, endTime }
+    response_shape: { status, data: [ModelRow], total }
+    purpose: "模型列表"
+    legacy_source_ref: src/api/lcy/lcy-model.js::getModelList
+  ...
+```
+
+**Rules:**
+
+1. **Source-only archaeology is forbidden.** You may not write an `api/*.ts`
+   function whose path / params / response shape is not backed by a request in
+   `network-manifest.yaml` for that page.
+2. **One manifest per user-visible page.** Multi-tab pages (`ML` / `DL` tabs)
+   may share a manifest if the URL set is identical; otherwise split.
+3. **Capture method must be reproducible.** Either:
+   - browser DevTools Network panel screenshot (record in
+     `migration/<domain>/evidence/<page>.png`), OR
+   - `curl` reprobe of the exact URL+params with the captured session cookie
+     (record command + response in `migration/<domain>/evidence/<page>.txt`).
+4. **Re-capture on legacy delta.** If `modernize sync scan` reports the legacy
+   page changed, regenerate the manifest before touching the new repo's API.
+5. **Response-shape fidelity is non-negotiable.** Do not rename keys
+   (`statisticName` is `statisticName`, not `name`; `modelCountVO` is
+   `modelCountVO`, not `modelStatistics`). If you cannot prove the shape from
+   the captured response, your function is wrong even if your mock passes.
+6. **Mock data must mirror real shape and real value space.** Mock `statisticName`
+   strings must be drawn from the real set observed in production
+   (`待上线模型数量/运行中模型数量/已下线模型数量`), not invented
+   (`已导入/在线服务/离线预估`). Mock that diverges from real shapes hides
+   integration bugs.
+7. **Smoke check after `api/*.ts` lands:** start `dev:real` (proxy to
+   `<legacy-prod-host>`), open the page in a real browser, and inspect each
+   request in the Network panel — every URL+params must match the manifest
+   within documented deviations. Record deviations in
+   `migration/<domain>/network-manifest-deviations.yaml`.
+
+**Failure mode this rule exists to prevent:** the agent reads `lcy-model.js`,
+sees `url: 'lcy/model/queryModelList'`, writes the same path in the new repo,
+and assumes the API integration is correct — when in fact the production page
+also calls `getImageSceneTree`, `getMulti`, `LLMModelType?...`, `getCodesByType`
+that the source grep never surfaced, and the new page silently drops them.
+This rule makes the missing requests visible before the smoke check, not after.
+
+
 
 ### Discovery-first bootstrap
 
@@ -531,3 +514,206 @@ When reporting work, state:
 - unresolved legacy deltas/unknowns;
 - deferred `NEW_REQUIREMENT` items;
 - whether the repository is `HANDOFF_READY`.
+
+---
+
+## v2.0 Multi-Dimensional Parity (mandatory, supersedes v1.7 for new work)
+
+**v1.7 Network-Alignment was necessary but not sufficient.** The agent in
+2026-09 produced a "model dashboard" that:
+- used 3 entirely wrong URLs (`/lcy/model/modelDashboard`, `/lcy/model/getModelCount`)
+  instead of the real `/lcy/model/trend/getStatusDistribution*` family;
+- invented a 7-line chart with 7-series legend, 7 hand-picked colors, and a
+  donut pie — none of which exists in production;
+- shipped 4 table columns (`createBy/created/updateBy/updated`) that production
+  doesn't show, while missing the production column the user explicitly cared
+  about;
+- all while typecheck and unit tests passed, and the dev:real page rendered
+  without errors.
+
+The root cause is that v1.7 only governs **API integration**. v2.0 extends
+parity to four additional dimensions, all required to reach `MODERNIZED`:
+
+1. **API parity** (Network-Alignment) — every URL/method/param/response backed
+   by a captured manifest request.
+2. **Field-level parity** — every legacy table column, form field, filter,
+   label, breadcrumb, tab, and operation button must appear in the new view,
+   in the same order, with the same data type, and the new view must not add
+   fields production does not have.
+3. **Visual parity** — chart types, chart colors, chart series names, layout
+   structure, spacing, and control styles must match production screenshots
+   pixel-for-pixel where reasonable. Inventing new chart kinds, new color
+   palettes, or new series layouts is forbidden.
+4. **Operation parity** — every clickable action in production (button, menu
+   item, row operation, batch operation, modal action) must be wired to a real
+   or explicit "later" handler. Skipping a button because it is "later work"
+   is forbidden — if it is in production, it must be present and visibly
+   wired even if the implementation is a placeholder that calls out to a TODO
+   manifest.
+
+### Per-page acceptance contract (mandatory)
+
+For every user-visible page you migrate, produce
+`migration/<domain>/pages/<page-slug>.yaml` before writing any view code:
+
+```yaml
+# migration/<domain>/pages/<page-slug>.yaml
+page: <legacy-path>
+captured_at: 2026-09-10T16:30:00+08:00
+legacy_screenshot: migration/<domain>/evidence/<page-slug>.png
+target_screenshot: migration/<domain>/evidence/<page-slug>.target.png   # after this work
+# ---------------------------------------------------------------------
+# 1. Layout regions
+layout:
+  regions: [header, toolbar, tabs, filter_bar, table, pager, footer]
+  # legacy_screenshot.png must show each region; new view must render it.
+
+# ---------------------------------------------------------------------
+# 2. Filter bar — every visible control
+filter_bar:
+  controls:
+    - { type: el-radio-group, items: [{label: 机器学习, value: ML}, {label: 深度学习, value: DL}], model: modelTypeCategory, default: ML }
+    - { type: el-input, placeholder: 请输入模型名称, model: modelName }
+    - { type: el-select, placeholder: 学习方式, model: learnMethod, options_from: dict_ML }
+    - { type: el-date-picker, type: daterange, start_placeholder: 创建时间, end_placeholder: 结束时间, model: dateRange }
+  # NOTHING may be invented. Each control must appear in the legacy screenshot.
+
+# ---------------------------------------------------------------------
+# 3. Table columns — every column, in order
+table:
+  columns:
+    - { type: selection, width: 48 }
+    - { prop: modelName, label: 模型名称, min_width: 160, show_overflow_tooltip: true }
+    - { prop: modelType, label: 模型类型, min_width: 120 }
+    - { prop: learnMethod, label: 学习方式, min_width: 120 }
+    - { prop: versionCount, label: 版本数量, width: 90, align: center }
+    - { prop: created, label: 创建时间, min_width: 160 }
+    - { prop: createBy, label: 创建者, width: 100 }
+    - { type: action, label: 操作, width: 120, fixed: right, items: [查看, 删除] }
+  # Every column must be present. The order must match the legacy screenshot.
+  # If a column is in target code but not in this list, it is FORBIDDEN.
+  # If a column is in this list but not in target code, the work is INCOMPLETE.
+
+# ---------------------------------------------------------------------
+# 4. Operations — every clickable thing
+operations:
+  - { id: query,        trigger: filter.查询, action: "search()" }
+  - { id: import,       trigger: toolbar.导入模型, action: "onImport()" }
+  - { id: batch_delete, trigger: toolbar.批量删除, action: "onBatchDelete()" }
+  - { id: row_delete,   trigger: row.操作.删除, action: "onDelete(row)" }
+  - { id: row_detail,   trigger: row.操作.详情, action: "onDetail(row)" }
+
+# ---------------------------------------------------------------------
+# 5. Network — every request this page fires
+network_ref: migration/<domain>/network-manifest.yaml#pages[name=模型列表].requests
+```
+
+**Rules:**
+
+1. **No filter is added that production does not have.** If your view has a
+   filter the legacy page doesn't, you invented it.
+2. **No column is hidden or removed without a documented decision** in
+   `migration/<domain>/delta-decisions.yaml`.
+3. **No column is added that production doesn't have.** If your view renders
+   `createBy/created/updateBy/updated` columns and the production screenshot
+   does not show them, the columns must be removed.
+4. **Every action button has a wired handler.** A button that does nothing on
+   click is forbidden. Placeholder handlers must call out to
+   `migration/<domain>/TODOs.yaml` with a real entry.
+5. **No invented chart kinds.** If production shows 3 distinct filter blocks
+   feeding 3 charts, you do not get to "simplify" them into 1 filter and 1
+   chart. Replicate the structure.
+6. **No invented colors.** Read the colors from the legacy screenshot (eyedrop
+   or color pick), or copy from the legacy CSS file, or copy from the legacy
+   ECharts option object. Never pick from a Tailwind default palette.
+7. **No invented series names.** If production's pie legend says
+   "总量/机器学习/深度学习/大模型", you do not get to rename it to
+   "已导入/在线服务/离线预估".
+
+### Per-page parity check (mandatory, runs before `MODERNIZED`)
+
+After implementing a page, you MUST run:
+
+```bash
+# 1. Take a fresh screenshot of the new view in dev:real.
+node tools/screenshot.mjs --url http://localhost:5173/<route> \
+                          --out migration/<domain>/evidence/<page-slug>.target.png
+# 2. Use pixel-diff vs legacy screenshot; record in evidence/<page-slug>.diff.png
+node tools/diff.mjs --a migration/<domain>/evidence/<page-slug>.png \
+                    --b migration/<domain>/evidence/<page-slug>.target.png \
+                    --out migration/<domain>/evidence/<page-slug>.diff.png
+# 3. Use LLM vision to enumerate visible elements in BOTH screenshots
+#    and produce a 1:1 element list; flag every missing/excess/renamed element.
+node tools/element-compare.mjs --a ... --b ... --out migration/<domain>/evidence/<page-slug>.elements.yaml
+```
+
+A page is **not** at `VISUAL_PARITY_CHECK = PASS` until:
+
+- [ ] Filter bar has the same controls in the same order.
+- [ ] Table has the same columns in the same order, no missing, no excess.
+- [ ] Charts have the same kind, same series names, same legends, same colors.
+- [ ] Operation buttons are all present and have wired handlers.
+- [ ] Network requests match the manifest URL/params/responses.
+
+### Recursive capture (mandatory, v2.0)
+
+A page that "loads once and shows data" hides half of its API surface. Before
+declaring a page's network manifest complete, you MUST trigger every state:
+
+- **Every tab / radio / dropdown filter** — switch them, capture the new
+  requests.
+- **Every action button** — click it, capture the requests.
+- **Every pagination state** — go to page 2, change page size.
+- **Every form** — open it, fill required fields, save.
+- **Every modal** — open it, close it, submit it.
+
+For dashboards specifically:
+
+- **Every filter combination** — change modelType select, change date range,
+  change 24h/3d/7d/30d radio, capture the requests for each combination.
+- **Every "view type" or sub-tab** — if the dashboard has 3 panels, each panel
+  fires its own requests; capture each panel's requests, not just the first.
+
+Record every captured combination in
+`migration/<domain>/network-manifest.yaml` with `combinations:` keys.
+
+### Field-level mirror (mandatory, v2.0)
+
+For every table column, form field, filter, breadcrumb, menu item, and
+operation button in the legacy page, the new view must have a 1:1
+counterpart. Produce `migration/<domain>/pages/<page-slug>.yaml` with
+`table.columns`, `form.fields`, `toolbar.items`, `filter_bar.controls` lists
+that name every element by `prop` / `key` / `value` / `placeholder` and point
+to the legacy screenshot.
+
+A page's `MODERNIZED` transition is blocked until the element list is
+exactly equal to the legacy page's element list. Excess elements are
+forbidden; missing elements are blocking defects.
+
+### Mock-fidelity gate (mandatory, v2.0)
+
+Mock data is allowed only if it satisfies:
+
+1. **Shape fidelity** — every field in the mock is also in the real captured
+   response for at least one production record.
+2. **Value-space fidelity** — every enum string in the mock is one of the
+   values observed in the production response (not invented from "common
+   sense").
+3. **Variance fidelity** — the mock has at least one record per UI state
+   (selected, paginated, filtered-empty, error, etc.).
+4. **No false sense of completeness** — if the production API returns
+   `descDatasetType` but the mock row has both `descDatasetType` and
+   `datasetType`, the second field is a guess and must be removed.
+
+A mock that "looks plausible" but diverges from the real shape is treated as
+a defect, not a convenience.
+
+### Failure mode v2.0 exists to prevent
+
+The agent reads `lcy-model.js`, finds `url: 'lcy/model/modelDashboard'`,
+writes the same path in the new repo, picks 7 line colors and 7 series names
+that "look like a dashboard", ships the view, runs unit tests with mocked
+data, sees green, declares done. v1.7 caught the URL part. v2.0 catches
+the other six failure modes: missing fields, excess fields, invented charts,
+invented colors, unwired operations, and un-rendered filter combinations.
+

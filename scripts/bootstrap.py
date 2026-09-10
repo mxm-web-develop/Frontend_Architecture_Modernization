@@ -74,7 +74,7 @@ def main():
     if not legacy.exists():
         raise SystemExit(f"ERROR MOD-BOOT-002: legacy repository not found: {legacy}")
     if target == legacy or args.mode != "cross-repository":
-        raise SystemExit("ERROR MOD-BOOT-003: v1.3 scope is brownfield reconstruction into a NEW repository; in-place modernization is out of scope")
+        raise SystemExit("ERROR MOD-BOOT-003: this Skill only supports brownfield reconstruction into a NEW repository; in-place modernization is out of scope")
 
     profile_src = Path(args.profile).resolve()
     if not profile_src.exists():
@@ -140,12 +140,14 @@ def main():
 这是一个 brownfield 前端架构现代化项目。
 
 ## 必须先读
-1. `governance/project.yaml`
-2. `governance/project-status.yaml`
-3. `governance/modernization-constitution.yaml`
-4. `governance/current-system.yaml`
-5. `governance/framework-strategy.yaml`
+1. `docs/modernization/README.md`（如果已经生成）
+2. `docs/modernization/project-overview.md`
+3. `docs/modernization/architecture-modernization-plan.md`
+4. `governance/project.yaml`
+5. `governance/modernization-constitution.yaml`
 6. 与当前任务相关的 Domain / Module Manifest
+
+人读文档负责解释项目、计划和进度；`governance/**`、`migration/**` 负责机器事实、Stable ID 和 Evidence。
 
 ## 核心边界
 - Legacy 仓库只读，是产品行为事实来源。
@@ -164,12 +166,14 @@ def main():
 This is a brownfield frontend architecture modernization project.
 
 ## Read first
-1. `governance/project.yaml`
-2. `governance/project-status.yaml`
-3. `governance/modernization-constitution.yaml`
-4. `governance/current-system.yaml`
-5. `governance/framework-strategy.yaml`
+1. `docs/modernization/README.md` when available
+2. `docs/modernization/project-overview.md`
+3. `docs/modernization/architecture-modernization-plan.md`
+4. `governance/project.yaml`
+5. `governance/modernization-constitution.yaml`
 6. The relevant Domain / Module manifest
+
+Human documentation explains the project, plan, and progress. `governance/**` and `migration/**` preserve machine truth, stable IDs, and evidence.
 
 ## Scope boundary
 - Legacy is read-only and is the product-behavior truth source.
@@ -220,7 +224,7 @@ Use the logical `modernize <command>` interface. Run `modernize status --repo .`
     marker.write_text(json.dumps({
         "schema_version":"1",
         "skill":"frontend-architecture-modernization",
-        "skill_version":"1.5.1",
+        "skill_version":"1.6.0",
         "scope":"brownfield-new-repository",
         "legacy_repository":str(legacy),
         "legacy_baseline":baseline,

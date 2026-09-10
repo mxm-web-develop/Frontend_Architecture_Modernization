@@ -1,0 +1,13 @@
+schema_version: '1'
+project_name: null
+project_summary: null
+business_area_labels: {}
+domain_descriptions: {}
+migration_order: []
+notes: []
+policy:
+  show_internal_ids_in_main_text: false
+  show_raw_enums_in_main_text: false
+  render_null_as_none: false
+  machine_evidence_location: migration/system
+  human_docs_location: docs/modernization

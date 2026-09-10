@@ -7,24 +7,6 @@ migration must preserve the rendered result.
 
 Architecture modernization may change internals without changing approved output.
 
-### Source of truth (priority, v1.6+)
-
-1. **Live production runtime** — application actually running in production.
-2. Legacy build reproduction (e.g. spinning up the legacy repo locally).
-3. Legacy source code (last resort, only for understanding implementation details).
-
-A legacy build is allowed as the only baseline only when **no production URL is
-available** (e.g. project is in pre-launch state). When `profile.live_runtime.required`
-is `true`, `STRICT_PRESERVE` MUST use a live runtime baseline and the visual manifest
-scenario must declare `baseline_source: live_runtime` with a complete `live_runtime`
-sub-object (`url`, `captured_at`, `commit`, `screenshot_sha256`).
-
-旧仓源码（legacy repo code）只用于：
-- 找到 capability 实现逻辑的源头；
-- 复用 fixture / mock 思路。
-
-**绝不**允许把"legacy repo 里的某 .vue / .tsx 截图/样式描述"作为 UI/UX 真相。
-
 ## Policies
 
 | Policy | Meaning |

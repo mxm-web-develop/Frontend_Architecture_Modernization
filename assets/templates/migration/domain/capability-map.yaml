@@ -1,7 +1,3 @@
 schema_version: "1"
 domain: __DOMAIN__
 capabilities: []
-# v1.6 P6 提示：
-#   - 每个 capability 默认 ui.visual_policy=STRICT_PRESERVE；
-#   - baseline_source 在 profile.live_runtime.url 非空时为 live_runtime，否则 legacy_build；
-#   - 当 profile.live_runtime.required=true 时，approve 强制 live baseline 已落。

@@ -34,19 +34,6 @@ analysis:
   adapter: auto
   allow_heuristic_fallback: false
   adapter_contract: engine/analyzers/protocol.md
-# === v1.6 P7 新增：live runtime 与 delivery mode ===
-live_runtime:
-  url: ""
-  auth:
-    type: ""
-    selector: ""
-  required: false
-  capture:
-    driver: ""
-    output_dir: migration/system/live-baseline
-delivery:
-  mode: module-loop
-project_size: medium
 language:
   interaction: en
   human_documentation: en

@@ -217,6 +217,27 @@ python <skill-path>/scripts/modernize.py doctor --repo <target-repo>
 python <skill-path>/scripts/modernize.py status --repo <target-repo>
 ```
 
+### 调整人读文档中的业务名称
+
+如果静态分析得到的是 `Hall`、`Selection` 这类技术名称，Agent 或用户可以补充更易懂的业务名称：
+
+```bash
+python <skill-path>/scripts/modernize.py docs label hall "模型大厅" --repo <target-repo>
+python <skill-path>/scripts/modernize.py docs label selection "模型选型" --repo <target-repo>
+```
+
+设置项目名称和项目简介：
+
+```bash
+python <skill-path>/scripts/modernize.py docs set-project   --name "TokenHub"   --summary "AI 模型门户前端，包含模型大厅、选型、申请和后台配置。"   --repo <target-repo>
+```
+
+重新生成人读文档：
+
+```bash
+python <skill-path>/scripts/modernize.py docs build --repo <target-repo>
+```
+
 ### 分析 Legacy
 
 ```bash
@@ -229,10 +250,22 @@ python <skill-path>/scripts/modernize.py analyze --repo <target-repo>
 python <skill-path>/scripts/modernize.py assess --repo <target-repo>
 ```
 
-### 生成系统报告
+### 生成人读项目文档
 
 ```bash
 python <skill-path>/scripts/modernize.py report system --repo <target-repo>
+```
+
+只刷新人读文档：
+
+```bash
+python <skill-path>/scripts/modernize.py report human --repo <target-repo>
+```
+
+只刷新技术分析附录：
+
+```bash
+python <skill-path>/scripts/modernize.py report machine --repo <target-repo>
 ```
 
 ### 框架推荐

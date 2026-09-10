@@ -2,11 +2,6 @@ from __future__ import annotations
 from pathlib import Path
 import json, datetime, subprocess, yaml
 from engine.evidence.verification import validate_all_passed_gate_evidence, validate_gate_evidence
-from engine.runtime_capture import (
-    LiveRuntimeSpec,
-    capability_live_evidence_paths,
-    load_live_runtime,
-)
 
 DOMAIN_STATES=[
     'DISCOVERED','CAPABILITY_MODELED','RESPONSIBILITY_REVIEWED','TARGET_CONTRACT_DEFINED',
@@ -52,52 +47,6 @@ def _existing_target_sources(repo:Path,source_target:dict):
         p=Path(value); candidate=p if p.is_absolute() else repo/p
         if candidate.exists(): out.append(value)
     return out
-
-def _load_live_runtime_spec(repo:Path) -> LiveRuntimeSpec:
-    """读 governance/project.yaml 的 live_runtime 块；缺省给空 spec。"""
-    p = repo / 'governance' / 'project.yaml'
-    if not p.exists():
-        return LiveRuntimeSpec()
-    try:
-        data = yaml.safe_load(p.read_text(encoding='utf-8')) or {}
-    except Exception:
-        return LiveRuntimeSpec()
-    return load_live_runtime(data)
-
-def _has_live_runtime_evidence(repo:Path, domain:str, cap_id:str) -> bool:
-    """domain/live-runtime/<cap_id>*.json 是否存在（snapshot 或 flow）。"""
-    d = repo / 'migration' / 'domains' / domain / 'live-runtime'
-    if not d.exists() or not cap_id:
-        return False
-    cap_id = cap_id.lower()
-    return any(
-        p.is_file() and cap_id in p.name.lower()
-        for p in d.rglob('*.json')
-    )
-
-def _load_route_coverage(repo:Path, domain:str) -> dict:
-    p = repo / 'migration' / 'domains' / domain / 'route-coverage.yaml'
-    if not p.exists(): return {'covered': 0, 'total': 0}
-    try:
-        return yaml.safe_load(p.read_text(encoding='utf-8')) or {'covered': 0, 'total': 0}
-    except Exception:
-        return {'covered': 0, 'total': 0}
-
-def _load_capability_completeness(repo:Path, domain:str, cap_id:str) -> dict:
-    p = repo / 'migration' / 'domains' / domain / 'completeness' / f'{cap_id}.yaml'
-    if not p.exists(): return {}
-    try:
-        return yaml.safe_load(p.read_text(encoding='utf-8')) or {}
-    except Exception:
-        return {}
-
-def _capability_has_live_evidence(repo:Path, domain:str, cap_id:str) -> bool:
-    """如果 profile.live_runtime.required=true，capability 必须有 live evidence。"""
-    paths = capability_live_evidence_paths(repo, domain)
-    if not paths:
-        return False
-    cap_id = cap_id.lower()
-    return any(cap_id in p.name.lower() for p in paths)
 
 def _framework_confirmed(repo:Path):
     p=repo/'governance/framework-strategy.yaml'
@@ -145,15 +94,6 @@ def state_prerequisite_errors(repo:Path,domain:str,target_state:str):
         paths=_target_source_paths(source_target)
         if not paths: errors.append('source-target-map target.sources/paths must identify target code locations before IMPLEMENTING')
         elif not _existing_target_sources(repo,source_target): errors.append('IMPLEMENTING requires at least one mapped target source path to exist')
-        # === v1.6 P4：live_runtime.required=true 时，IMPLEMENTING 必须已落 live baseline ===
-        live_spec = _load_live_runtime_spec(repo)
-        if live_spec.required and live_spec.url:
-            lb = repo / 'migration' / 'domains' / domain / 'live-runtime'
-            if not lb.exists() or not any(lb.glob('*.json')):
-                errors.append(
-                    f"IMPLEMENTING requires live-runtime baseline under migration/domains/{domain}/live-runtime/ "
-                    "(profile.live_runtime.required=true)"
-                )
     elif target_state=='FUNCTIONAL_PARITY_CHECK':
         if not _nonempty_list(functional,'scenarios'): errors.append('functional-scenarios.yaml must contain scenarios')
     elif target_state=='VISUAL_PARITY_CHECK':
@@ -179,28 +119,6 @@ def state_prerequisite_errors(repo:Path,domain:str,target_state:str):
         for gate in ('functional','architecture','traceability'):
             if not _gate_ok(gates.get(gate)): errors.append(f'{gate} gate must PASS/WAIVED')
         if not _gate_ok(gates.get('visual'),allow_na=True): errors.append('visual gate must PASS/WAIVED/NOT_APPLICABLE')
-        # === v1.6 P3：live baseline + 100% 路由覆盖 + capability 完整度 ===
-        live_spec = _load_live_runtime_spec(repo)
-        coverage = _load_route_coverage(repo, domain)
-        total = int(coverage.get('total', 0))
-        covered = int(coverage.get('covered', 0))
-        if total > 0 and covered < total:
-            errors.append(f'route coverage {covered}/{total} must be 100% before MODERNIZED')
-        for cap in capabilities.get('capabilities', []):
-            cap_id = cap.get('id') or ''
-            if not cap_id:
-                continue
-            comp = _load_capability_completeness(repo, domain, cap_id)
-            for k in ('route', 'ui', 'api', 'flow'):
-                v = comp.get(k)
-                if v is not True:
-                    errors.append(f'{cap_id}: completeness.{k} must be true (got {v!r})')
-            if live_spec.required and live_spec.url:
-                if not _capability_has_live_evidence(repo, domain, cap_id):
-                    errors.append(
-                        f'{cap_id}: missing live-runtime evidence under '
-                        f'migration/domains/{domain}/live-runtime/{cap_id}*.json'
-                    )
         cap_ids={c.get('id') for c in capabilities.get('capabilities',[]) if c.get('id')}
         parity_ids={c.get('id') for c in parity.get('capabilities',[]) if c.get('id')}
         missing=sorted(cap_ids-parity_ids)
